@@ -1,0 +1,89 @@
+﻿{% extends "aen_base.html" %}
+
+{% block title %}AEN Systems | Menos obstáculos. Mais soluções.{% endblock %}
+{% block meta_description %}AEN Systems: consultoria em TI e desenvolvimento sob medida com foco em ERP CIGAM, integrações e automações.{% endblock %}
+
+{% block content %}
+<section class="aen-hero aen-container">
+  <div>
+    <h1>AEN Systems</h1>
+    <p>Fundada em 11 de janeiro de 2021, a AEN Systems é uma empresa de TI e consultoria com foco em ERP CIGAM, automações e integrações. Atuamos para reduzir atritos operacionais e liberar tempo para o que realmente importa.</p>
+    <div class="aen-cta-row" style="margin-top: 20px;">
+      <a class="aen-btn primary" href="https://wa.me/5551997950492" target="_blank" rel="noopener" aria-label="Abrir WhatsApp">WhatsApp</a>
+      <a class="aen-btn" href="tel:+5551997950492" aria-label="Ligar para AEN Systems">Telefone</a>
+      <a class="aen-btn" href="https://mail.google.com/mail/?view=cm&fs=1&to=aensistemas@gmail.com" target="_blank" rel="noopener" aria-label="Enviar e-mail">E-mail</a>
+    </div>
+    <p class="aen-muted" style="margin-top: 14px;">Novo Hamburgo/RS</p>
+  </div>
+  <div class="aen-hero-card">
+    <div class="aen-pill-links">
+      <a class="aen-pill" href="#o-que-fazemos">
+        <span>Home</span>
+        <small>Explore as seções</small>
+      </a>
+      <a class="aen-pill" href="{{ url_for('aen_about') }}">
+        <span>Sobre &amp; Serviços</span>
+        <small>História e portfólio</small>
+      </a>
+      <a class="aen-pill" href="{{ url_for('aen_faq') }}">
+        <span>Dúvidas</span>
+        <small>Perguntas frequentes</small>
+      </a>
+      <a class="aen-pill" href="{{ url_for('aen_contact') }}">
+        <span>Contato</span>
+        <small>Fale com a equipe</small>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="aen-section aen-container" id="o-que-fazemos">
+  <h2>O que fazemos</h2>
+  <div class="aen-grid">
+    <div class="aen-card">
+      <strong>Consultoria em TI</strong>
+      <p class="aen-muted">Diagnóstico, melhoria contínua e decisões guiadas por dados.</p>
+    </div>
+    <div class="aen-card">
+      <strong>Desenvolvimento sob medida</strong>
+      <p class="aen-muted">Soluções personalizadas e integrações que conectam sistemas.</p>
+    </div>
+    <div class="aen-card">
+      <strong>Suporte e manutenção</strong>
+      <p class="aen-muted">Monitoramento e ajustes rápidos para manter a operação no ar.</p>
+    </div>
+  </div>
+</section>
+
+<section class="aen-section aen-container">
+  <h2>CIGAM na prática</h2>
+  <div class="aen-grid">
+    <div class="aen-card">
+      <p>Atuamos com ERP CIGAM em rotinas críticas, relatórios, integrações e automações. Ajustamos processos, criamos customizações e otimizamos banco de dados/SQL quando aplicável.</p>
+      <ul class="aen-list">
+        <li>Automação de fluxos e validações.</li>
+        <li>Relatórios e dashboards gerenciais.</li>
+        <li>Integrações com sistemas legados.</li>
+      </ul>
+    </div>
+    <div class="aen-card aen-highlight">
+      <strong>Consultoria e desenvolvimento para operações que não podem parar</strong>
+      <p class="aen-muted">Nosso foco é estabilidade operacional com entregas rápidas e bem documentadas.</p>
+    </div>
+  </div>
+</section>
+
+<section class="aen-section aen-container">
+  <h2>Localização</h2>
+  <p class="aen-muted">Rua Vladimir Quadro, 90 - Canudos, Novo Hamburgo - RS, 93.546-820</p>
+  <iframe class="aen-map" title="Mapa AEN Systems" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Rua%20Vladimir%20Quadro%2C%2090%20-%20Canudos%2C%20Novo%20Hamburgo%20-%20RS&output=embed"></iframe>
+</section>
+
+<section class="aen-section aen-container">
+  <h2>Pronto para reduzir atritos?</h2>
+  <div class="aen-cta-row">
+    <a class="aen-btn primary" href="https://wa.me/5551997950492" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">Falar no WhatsApp</a>
+    <a class="aen-btn" href="https://mail.google.com/mail/?view=cm&fs=1&to=aensistemas@gmail.com" target="_blank" rel="noopener" aria-label="Enviar e-mail">Enviar e-mail</a>
+  </div>
+</section>
+{% endblock %}

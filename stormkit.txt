@@ -1,0 +1,3 @@
+﻿# Stormkit
+# Build command: python build.py
+# Output directory: dist

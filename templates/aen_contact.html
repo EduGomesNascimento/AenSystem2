@@ -1,0 +1,82 @@
+﻿{% extends "aen_base.html" %}
+
+{% block title %}AEN Systems | Contato{% endblock %}
+{% block meta_description %}Fale com a AEN Systems: WhatsApp, e-mail e redes sociais. Novo Hamburgo/RS.{% endblock %}
+
+{% block content %}
+<section class="aen-hero aen-container">
+  <div>
+    <span class="aen-tag">CIGAM, automações, integrações e suporte</span>
+    <h1>Contato</h1>
+    <p>Fale com a equipe AEN Systems para tirar dúvidas, solicitar suporte ou iniciar um projeto.</p>
+  </div>
+  <div class="aen-hero-card">
+    <strong>Local</strong>
+    <p class="aen-muted">Novo Hamburgo/RS</p>
+    <div class="aen-cta-row" style="margin-top: 16px;">
+      <a class="aen-btn" href="https://www.instagram.com/aensistemas/" target="_blank" rel="noopener">Instagram</a>
+      <a class="aen-btn" href="https://br.linkedin.com/in/aenportao/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<section class="aen-section aen-container">
+  <h2>Fale agora</h2>
+  <div class="aen-grid">
+    <div class="aen-card">
+      <strong>WhatsApp</strong>
+      <p class="aen-muted">Atendimento rápido via mensagem.</p>
+      <a class="aen-btn primary" href="https://wa.me/555199684105" target="_blank" rel="noopener" aria-label="Abrir WhatsApp">Abrir WhatsApp</a>
+    </div>
+    <div class="aen-card">
+      <strong>E-mail</strong>
+      <p class="aen-muted">Envie sua solicitação com detalhes.</p>
+      <a class="aen-btn" href="https://mail.google.com/mail/?view=cm&fs=1&to=aensistemas@gmail.com" aria-label="Enviar e-mail">Enviar e-mail</a>
+    </div>
+    <div class="aen-card">
+      <strong>Instagram</strong>
+      <p class="aen-muted">Conteúdo e bastidores da operação.</p>
+      <a class="aen-btn" href="https://www.instagram.com/aensistemas/" target="_blank" rel="noopener">Visitar perfil</a>
+    </div>
+    <div class="aen-card">
+      <strong>LinkedIn</strong>
+      <p class="aen-muted">Conexões profissionais e projetos.</p>
+      <a class="aen-btn" href="https://br.linkedin.com/in/aenportao/" target="_blank" rel="noopener">Abrir LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<section class="aen-section aen-container">
+  <h2>Endereço</h2>
+  <p class="aen-muted">Rua Vladimir Quadro, 90 - Canudos, Novo Hamburgo - RS, 93.546-820</p>
+  <iframe class="aen-map" title="Mapa AEN Systems" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Rua%20Vladimir%20Quadro%2C%2090%20-%20Canudos%2C%20Novo%20Hamburgo%20-%20RS&output=embed"></iframe>
+</section>
+
+<section class="aen-section aen-container">
+  <h2>Solicite um contato</h2>
+  <form class="aen-form" data-aen-mailto-form>
+    <div>
+      <label for="nome">Nome</label>
+      <input id="nome" name="nome" type="text" required>
+    </div>
+    <div>
+      <label for="empresa">Empresa</label>
+      <input id="empresa" name="empresa" type="text">
+    </div>
+    <div>
+      <label for="assunto">Assunto</label>
+      <input id="assunto" name="assunto" type="text" required>
+    </div>
+    <div>
+      <label for="mensagem">Mensagem</label>
+      <textarea id="mensagem" name="mensagem" rows="4" required></textarea>
+    </div>
+    <div class="aen-cta-row">
+      <button class="aen-btn primary" type="submit">Enviar via e-mail</button>
+      <span class="aen-muted">Enviar via seu e-mail (sem armazenar dados).</span>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+
