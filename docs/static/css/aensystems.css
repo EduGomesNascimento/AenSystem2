@@ -451,7 +451,7 @@
 .aen-faq-question {
   position: relative;
   padding-left: 22px;
-  color: var(--aen-text);
+  color: var(--aen-primary);
 }
 
 .aen-faq-question::before {
@@ -492,7 +492,7 @@
 }
 
 .aen-faq-panel {
-  padding: 0 18px 16px;
+  padding: 8px 18px 18px;
   color: var(--aen-muted);
   line-height: 1.6;
   animation: aen-faq-open 0.2s ease;
