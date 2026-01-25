@@ -3,12 +3,12 @@
   --aen-secondary: #47C16D;
   --aen-dark: #0E6F78;
   --aen-bg: #F6FBFA;
-  --aen-text: #ffffff;
+  --aen-text: #0f172a;
   --aen-border: rgba(15, 23, 42, 0.12);
   --aen-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
   --aen-surface: #ffffff;
   --aen-surface-2: rgba(255, 255, 255, 0.92);
-  --aen-muted: rgba(255, 255, 255, 0.88);
+  --aen-muted: rgba(15, 23, 42, 0.72);
   color: var(--aen-text);
   font-family: "Futura BK", "Futura", "Trebuchet MS", "Segoe UI", sans-serif;
   background: radial-gradient(circle at 10% 0%, rgba(27, 179, 167, 0.16), transparent 45%),
@@ -18,20 +18,22 @@
 }
 
 .aen-page[data-theme="dark"] {
-  --aen-primary: #169c90;
-  --aen-secondary: #3fb566;
-  --aen-dark: #d9f7f2;
-  --aen-bg: #0b1416;
-  --aen-text: #f8fbff;
-  --aen-border: rgba(237, 248, 246, 0.16);
-  --aen-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  --aen-surface: #0f1b1e;
-  --aen-surface-2: rgba(15, 27, 30, 0.92);
-  --aen-muted: rgba(248, 251, 255, 0.86);
-  background: radial-gradient(circle at 10% 0%, rgba(22, 156, 144, 0.12), transparent 45%),
-    radial-gradient(circle at 90% 10%, rgba(63, 181, 102, 0.12), transparent 40%),
+  --aen-primary: #2a6b62;
+  --aen-secondary: #3d7a6b;
+  --aen-dark: #d9e6e1;
+  --aen-bg: #101413;
+  --aen-text: #f4f7f6;
+  --aen-border: rgba(96, 120, 112, 0.35);
+  --aen-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  --aen-surface: #151c1a;
+  --aen-surface-2: rgba(21, 28, 26, 0.92);
+  --aen-muted: rgba(210, 220, 216, 0.85);
+  background: radial-gradient(circle at 10% 0%, rgba(42, 107, 98, 0.2), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(61, 122, 107, 0.18), transparent 40%),
     var(--aen-bg);
-}.aen-page * {
+}
+
+.aen-page * {
   box-sizing: border-box;
 }
 
@@ -41,14 +43,7 @@
 }
 
 .aen-shell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(rgba(14, 111, 120, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14, 111, 120, 0.06) 1px, transparent 1px);
-  background-size: 34px 34px;
-  opacity: 0.35;
-  pointer-events: none;
+  content: none;
 }
 
 .aen-container {
@@ -102,7 +97,7 @@
 .aen-brand-tagline {
   font-size: 0.72rem;
   font-weight: 600;
-  color: rgba(15, 23, 42, 0.7);
+  color: var(--aen-muted);
   margin-top: 2px;
 }
 
@@ -135,6 +130,7 @@
   gap: 32px;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   align-items: center;
+  background: none;
 }
 
 .aen-hero h1 {
@@ -145,7 +141,7 @@
 .aen-hero p {
   font-size: 1.05rem;
   line-height: 1.6;
-  color: rgba(15, 23, 42, 0.8);
+  color: var(--aen-muted);
 }
 
 .aen-hero-card {
@@ -222,7 +218,7 @@
 
 .aen-btn.primary {
   background: linear-gradient(135deg, var(--aen-primary), var(--aen-secondary));
-  color: #041013;
+  color: #0f1b18;
   border: none;
 }
 
