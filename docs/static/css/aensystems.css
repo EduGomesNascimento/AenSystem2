@@ -329,16 +329,35 @@
   flex-direction: column;
 }
 
-.aen-video-card video {
+.aen-video-embed {
+  position: relative;
   width: 100%;
-  display: block;
+  padding-top: 56.25%;
   background: #0b1b22;
+}
+
+.aen-video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .aen-video-card .aen-video-body {
   padding: 14px 16px 18px;
   display: grid;
   gap: 8px;
+}
+
+.aen-video-link {
+  font-weight: 600;
+  color: var(--aen-primary);
+  text-decoration: none;
+}
+
+.aen-video-link:hover {
+  text-decoration: underline;
 }
 
 .aen-link-card {
