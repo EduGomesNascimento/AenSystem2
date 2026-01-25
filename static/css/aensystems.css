@@ -22,12 +22,12 @@
   --aen-secondary: #3fb566;
   --aen-dark: #0c5960;
   --aen-bg: #0b1416;
-  --aen-text: #edf8f6;
+  --aen-text: #f7fffb;
   --aen-border: rgba(237, 248, 246, 0.16);
   --aen-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   --aen-surface: #0f1b1e;
   --aen-surface-2: rgba(15, 27, 30, 0.92);
-  --aen-muted: rgba(204, 226, 221, 0.8);
+  --aen-muted: rgba(230, 250, 244, 0.86);
   background: radial-gradient(circle at 10% 0%, rgba(22, 156, 144, 0.12), transparent 45%),
     radial-gradient(circle at 90% 10%, rgba(63, 181, 102, 0.12), transparent 40%),
     var(--aen-bg);
@@ -630,3 +630,4 @@
 
 
 \n.aen-btn::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);\n  transform: translateX(-120%);\n  transition: transform 0.45s ease;\n  opacity: 0.6;\n  pointer-events: none;\n}\n\n.aen-btn:hover::after {\n  transform: translateX(120%);\n}\n\n.aen-btn.primary::after {\n  opacity: 0.5;\n}\n
+\n.aen-title{\n  display:flex;\n  align-items:center;\n  gap:14px;\n}\n\n.aen-title-logo{\n  width:48px;\n  height:48px;\n  object-fit:contain;\n}\n\n@media (max-width:720px){\n  .aen-title{flex-wrap:wrap;}\n}\n

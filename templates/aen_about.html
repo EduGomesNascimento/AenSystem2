@@ -6,7 +6,7 @@
 {% block content %}
 <section class="aen-hero aen-container">
   <div>
-    <h1>Sobre a AEN Systems</h1>
+    <div class="aen-title"><img class="aen-title-logo" src="{{ url_for("static", filename="aensystems/logo-aen.png") }}" alt="AEN Systems"><h1>Sobre a AEN Systems</h1></div>
     <p>Fundada em 11 de janeiro de 2021, a AEN Systems é uma microempresa dedicada a consultoria e soluções de TI. Nossa proposta é reduzir atrito operacional, automatizar processos e entregar visibilidade real com relatórios e dashboards, especialmente em ambientes ERP como o CIGAM.</p>
   </div>
   <div class="aen-hero-card">
@@ -143,5 +143,6 @@
   </div>
 </section>
 {% endblock %}
+
 
 
