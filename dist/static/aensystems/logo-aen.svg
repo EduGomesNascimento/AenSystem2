@@ -1,0 +1,12 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='260' height='80' viewBox='0 0 260 80'>
+  <defs>
+    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0' stop-color='#1BB3A7'/>
+      <stop offset='1' stop-color='#47C16D'/>
+    </linearGradient>
+  </defs>
+  <rect x='0' y='0' width='260' height='80' rx='18' fill='#0F172A'/>
+  <rect x='8' y='8' width='244' height='64' rx='14' fill='url(#g)'/>
+  <text x='26' y='52' font-family='Arial, sans-serif' font-size='30' font-weight='700' fill='#0F172A'>AEN</text>
+  <text x='110' y='52' font-family='Arial, sans-serif' font-size='22' font-weight='600' fill='#0F172A'>Systems</text>
+</svg>
