@@ -6,7 +6,8 @@ from jinja2 import Environment, FileSystemLoader
 ROOT = Path(__file__).resolve().parent
 TEMPLATES = ROOT / "templates"
 STATIC = ROOT / "static"
-DIST = ROOT / "dist"
+DIST = ROOT / "docs"
+CNAME_DEFAULT = "aensystems.com.br"
 
 PAGES = {
     "index.html": ("aen_home.html", "/"),
@@ -30,6 +31,11 @@ def url_for(endpoint, **values):
 
 
 if __name__ == "__main__":
+    cname_value = CNAME_DEFAULT
+    cname_file = DIST / "CNAME"
+    if cname_file.exists():
+        cname_value = cname_file.read_text(encoding="utf-8").strip() or CNAME_DEFAULT
+
     if DIST.exists():
         shutil.rmtree(DIST)
     DIST.mkdir(parents=True, exist_ok=True)
@@ -49,3 +55,6 @@ if __name__ == "__main__":
     # Basic 404 fallback
     not_found = DIST / "404.html"
     not_found.write_text("<h1>404</h1>", encoding="utf-8")
+
+    # GitHub Pages custom domain
+    (DIST / "CNAME").write_text(cname_value, encoding="utf-8")

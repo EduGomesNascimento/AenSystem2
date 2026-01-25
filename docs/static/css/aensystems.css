@@ -3,12 +3,12 @@
   --aen-secondary: #47C16D;
   --aen-dark: #0E6F78;
   --aen-bg: #F6FBFA;
-  --aen-text: #0F172A;
+  --aen-text: #ffffff;
   --aen-border: rgba(15, 23, 42, 0.12);
   --aen-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
   --aen-surface: #ffffff;
   --aen-surface-2: rgba(255, 255, 255, 0.92);
-  --aen-muted: rgba(15, 23, 42, 0.7);
+  --aen-muted: rgba(255, 255, 255, 0.88);
   color: var(--aen-text);
   font-family: "Futura BK", "Futura", "Trebuchet MS", "Segoe UI", sans-serif;
   background: radial-gradient(circle at 10% 0%, rgba(27, 179, 167, 0.16), transparent 45%),
@@ -20,14 +20,14 @@
 .aen-page[data-theme="dark"] {
   --aen-primary: #169c90;
   --aen-secondary: #3fb566;
-  --aen-dark: #0c5960;
+  --aen-dark: #d9f7f2;
   --aen-bg: #0b1416;
-  --aen-text: #edf8f6;
+  --aen-text: #f8fbff;
   --aen-border: rgba(237, 248, 246, 0.16);
   --aen-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   --aen-surface: #0f1b1e;
   --aen-surface-2: rgba(15, 27, 30, 0.92);
-  --aen-muted: rgba(204, 226, 221, 0.8);
+  --aen-muted: rgba(248, 251, 255, 0.86);
   background: radial-gradient(circle at 10% 0%, rgba(22, 156, 144, 0.12), transparent 45%),
     radial-gradient(circle at 90% 10%, rgba(63, 181, 102, 0.12), transparent 40%),
     var(--aen-bg);
@@ -500,7 +500,9 @@
   margin-top: 60px;
 }
 
-.aen-footer small {\r\n  color: var(--aen-muted);\r\n}
+.aen-footer small {
+  color: var(--aen-muted);
+}
 
 .aen-muted {
   color: var(--aen-muted);
@@ -625,8 +627,114 @@
   transform: translateX(20px);
 }
 
+.aen-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-120%);
+  transition: transform 0.45s ease;
+  opacity: 0.6;
+  pointer-events: none;
+}
 
+.aen-btn:hover::after {
+  transform: translateX(120%);
+}
 
+.aen-btn.primary::after {
+  opacity: 0.5;
+}
 
+.aen-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 
-\n.aen-btn::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);\n  transform: translateX(-120%);\n  transition: transform 0.45s ease;\n  opacity: 0.6;\n  pointer-events: none;\n}\n\n.aen-btn:hover::after {\n  transform: translateX(120%);\n}\n\n.aen-btn.primary::after {\n  opacity: 0.5;\n}\n
+.aen-title-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+@media (max-width: 720px) {
+  .aen-title {
+    flex-wrap: wrap;
+  }
+}
+
+.aen-fade-up {
+  animation: aen-fade-up 0.6s ease both;
+}
+
+.aen-stagger > * {
+  opacity: 0;
+  animation: aen-fade-up 0.7s ease both;
+}
+
+.aen-stagger > *:nth-child(1){animation-delay:0.05s;}
+.aen-stagger > *:nth-child(2){animation-delay:0.12s;}
+.aen-stagger > *:nth-child(3){animation-delay:0.2s;}
+.aen-stagger > *:nth-child(4){animation-delay:0.28s;}
+.aen-stagger > *:nth-child(5){animation-delay:0.36s;}
+
+@keyframes aen-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.aen-btn {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.aen-btn:hover {
+  transform: translateY(-4px) scale(1.03);
+}
+
+.aen-pill {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.aen-pill:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(14, 111, 120, 0.28);
+}
+
+.aen-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.aen-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(14, 111, 120, 0.24);
+}
+
+.aen-page[data-theme="dark"] .aen-card,
+.aen-page[data-theme="dark"] .aen-pill,
+.aen-page[data-theme="dark"] .aen-video-card,
+.aen-page[data-theme="dark"] .aen-link-card,
+.aen-page[data-theme="dark"] .aen-faq-item {
+  color: var(--aen-text);
+}
+
+.aen-page[data-theme="dark"] .aen-brand-tagline,
+.aen-page[data-theme="dark"] .aen-hero p,
+.aen-page[data-theme="dark"] .aen-faq-panel,
+.aen-page[data-theme="dark"] .aen-muted {
+  color: var(--aen-muted);
+}
+
+.aen-page[data-theme="dark"] .aen-tag {
+  color: var(--aen-text);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.aen-page[data-theme="dark"] .aen-link-card span,
+.aen-page[data-theme="dark"] .aen-faq-icon {
+  color: var(--aen-text);
+}
+
+.aen-page[data-theme="dark"] a {
+  color: var(--aen-text);
+}
