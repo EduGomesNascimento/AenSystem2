@@ -1,9 +1,9 @@
-﻿# AenSystem2 (Stormkit ready)
+﻿# AenSystem2 (GitHub Pages)
 
-Este repositório contém apenas o necessário para rodar no Stormkit como site estático.
+Este repositório publica via GitHub Pages usando a pasta `docs/`.
 
-Build command:
-- python build.py
+Build:
+- `python build.py`
 
-Output directory:
-- dist
+Output:
+- `docs/`
