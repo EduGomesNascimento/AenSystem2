@@ -734,3 +734,24 @@
 .aen-page[data-theme="dark"] a {
   color: var(--aen-text);
 }
+
+.aen-page:not([data-theme="dark"]) {
+  color: #0f172a;
+}
+
+.aen-page:not([data-theme="dark"]) .aen-nav a,
+.aen-page:not([data-theme="dark"]) .aen-brand,
+.aen-page:not([data-theme="dark"]) .aen-title h1,
+.aen-page:not([data-theme="dark"]) h1,
+.aen-page:not([data-theme="dark"]) h2,
+.aen-page:not([data-theme="dark"]) h3,
+.aen-page:not([data-theme="dark"]) p,
+.aen-page:not([data-theme="dark"]) small,
+.aen-page:not([data-theme="dark"]) .aen-pill,
+.aen-page:not([data-theme="dark"]) .aen-card {
+  color: #0f172a;
+}
+
+.aen-page:not([data-theme="dark"]) .aen-muted {
+  color: rgba(15, 23, 42, 0.72);
+}
