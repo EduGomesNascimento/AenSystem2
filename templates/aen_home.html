@@ -4,7 +4,7 @@
 {% block meta_description %}AEN Systems: consultoria em TI e desenvolvimento sob medida com foco em ERP CIGAM, integrações e automações.{% endblock %}
 
 {% block content %}
-<section class="aen-hero aen-container">
+<section class="aen-hero aen-container aen-fade-up">
   <div>
     <div class="aen-title"><img class="aen-title-logo" src="{{ url_for("static", filename="aensystems/logo-aen.png") }}" alt="AEN Systems"><h1>AEN Systems</h1></div>
     <p>Fundada em 11 de janeiro de 2021, a AEN Systems é uma empresa de TI e consultoria com foco em ERP CIGAM, automações e integrações. Atuamos para reduzir atritos operacionais e liberar tempo para o que realmente importa.</p>
@@ -16,7 +16,7 @@
     <p class="aen-muted" style="margin-top: 14px;">Novo Hamburgo/RS</p>
   </div>
   <div class="aen-hero-card">
-    <div class="aen-pill-links">
+    <div class="aen-pill-links aen-stagger">
       <a class="aen-pill" href="#o-que-fazemos">
         <span>Home</span>
         <small>Explore as seções</small>
@@ -39,7 +39,7 @@
 
 <section class="aen-section aen-container" id="o-que-fazemos">
   <h2>O que fazemos</h2>
-  <div class="aen-grid">
+  <div class="aen-grid aen-stagger">
     <div class="aen-card">
       <strong>Consultoria em TI</strong>
       <p class="aen-muted">Diagnóstico, melhoria contínua e decisões guiadas por dados.</p>
@@ -57,7 +57,7 @@
 
 <section class="aen-section aen-container">
   <h2>CIGAM na prática</h2>
-  <div class="aen-grid">
+  <div class="aen-grid aen-stagger">
     <div class="aen-card">
       <p>Atuamos com ERP CIGAM em rotinas críticas, relatórios, integrações e automações. Ajustamos processos, criamos customizações e otimizamos banco de dados/SQL quando aplicável.</p>
       <ul class="aen-list">
@@ -87,4 +87,5 @@
   </div>
 </section>
 {% endblock %}
+
 

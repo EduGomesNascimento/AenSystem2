@@ -4,7 +4,7 @@
 {% block meta_description %}Conheça a AEN Systems: fundada em 11 de janeiro de 2021, microempresa focada em consultoria e soluções em ERP CIGAM.{% endblock %}
 
 {% block content %}
-<section class="aen-hero aen-container">
+<section class="aen-hero aen-container aen-fade-up">
   <div>
     <div class="aen-title"><img class="aen-title-logo" src="{{ url_for("static", filename="aensystems/logo-aen.png") }}" alt="AEN Systems"><h1>Sobre a AEN Systems</h1></div>
     <p>Fundada em 11 de janeiro de 2021, a AEN Systems é uma microempresa dedicada a consultoria e soluções de TI. Nossa proposta é reduzir atrito operacional, automatizar processos e entregar visibilidade real com relatórios e dashboards, especialmente em ambientes ERP como o CIGAM.</p>
@@ -20,7 +20,7 @@
 
 <section class="aen-section aen-container">
   <h2>Serviços detalhados</h2>
-  <div class="aen-grid">
+  <div class="aen-grid aen-stagger">
     <div class="aen-card"><strong>Consultoria em TI</strong><p class="aen-muted">Diagnóstico, planejamento e melhoria contínua.</p></div>
     <div class="aen-card"><strong>Desenvolvimento sob encomenda</strong><p class="aen-muted">Soluções personalizadas alinhadas ao seu fluxo de trabalho.</p></div>
     <div class="aen-card"><strong>Softwares customizáveis</strong><p class="aen-muted">Ferramentas flexíveis para crescer junto com a operação.</p></div>
@@ -94,7 +94,7 @@
 
 <section class="aen-section aen-container">
   <h2>CIGAM, MAGIC e ERP na prática</h2>
-  <div class="aen-grid">
+  <div class="aen-grid aen-stagger">
     <div class="aen-card aen-highlight">
       <strong>O que é ERP e software de gestão</strong>
       <p class="aen-muted">ERP é um sistema que integra financeiro, estoque, produção, compras e vendas em um único fluxo. Ele centraliza dados, padroniza processos e gera visibilidade para decisões rápidas.</p>
@@ -143,6 +143,7 @@
   </div>
 </section>
 {% endblock %}
+
 
 
 
