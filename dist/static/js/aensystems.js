@@ -63,6 +63,23 @@
       applyTheme(mode);
     });
   }
+
+  const clientLogos = document.querySelectorAll('.aen-client-card img');
+  clientLogos.forEach((img) => {
+    const card = img.closest('.aen-client-card');
+    if (!card) return;
+    const markLoaded = () => {
+      if (img.naturalWidth > 0) card.classList.add('has-logo');
+    };
+    if (img.complete) {
+      markLoaded();
+    } else {
+      img.addEventListener('load', markLoaded);
+    }
+    img.addEventListener('error', () => {
+      card.classList.remove('has-logo');
+    });
+  });
 })();
 
 

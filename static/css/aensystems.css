@@ -235,6 +235,12 @@
   gap: 8px;
 }
 
+.aen-benefits .aen-benefit-hero {
+  grid-column: 1 / -1;
+  background: rgba(27, 179, 167, 0.08);
+  border-color: rgba(27, 179, 167, 0.2);
+}
+
 .aen-benefits strong {
   color: var(--aen-dark);
 }
@@ -435,6 +441,7 @@
   text-decoration: none;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
 }
 
 .aen-client-card img {
@@ -442,6 +449,23 @@
   max-width: 150px;
   max-height: 68px;
   object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.aen-client-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--aen-text);
+}
+
+.aen-client-card.has-logo img {
+  opacity: 1;
+}
+
+.aen-client-card.has-logo .aen-client-name {
+  display: none;
 }
 
 .aen-client-card:hover {
