@@ -201,6 +201,44 @@
   flex-wrap: wrap;
 }
 
+.aen-feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.aen-feature-tags span {
+  background: rgba(27, 179, 167, 0.12);
+  color: var(--aen-dark);
+  border: 1px solid rgba(27, 179, 167, 0.2);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.aen-benefits {
+  margin-top: 24px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.aen-benefits article {
+  background: var(--aen-surface);
+  border: 1px solid var(--aen-border);
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 8px;
+}
+
+.aen-benefits strong {
+  color: var(--aen-dark);
+}
+
 .aen-btn {
   display: inline-flex;
   align-items: center;
@@ -377,6 +415,59 @@
 .aen-link-card span {
   color: var(--aen-dark);
   font-weight: 600;
+}
+
+.aen-clients-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin-top: 22px;
+}
+
+.aen-client-card {
+  display: grid;
+  place-items: center;
+  background: var(--aen-surface);
+  border: 1px solid var(--aen-border);
+  border-radius: 6px;
+  padding: 18px;
+  min-height: 100px;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aen-client-card img {
+  width: 100%;
+  max-width: 150px;
+  max-height: 68px;
+  object-fit: contain;
+}
+
+.aen-client-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(14, 111, 120, 0.18);
+}
+
+.aen-credit {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  background: var(--aen-surface-2);
+  border: 1px solid var(--aen-border);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--aen-text);
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  z-index: 20;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aen-credit:hover {
+  transform: translateY(-2px);
 }
 
 .aen-demo {
@@ -584,7 +675,8 @@
 .aen-page[data-theme="dark"] .aen-pill,
 .aen-page[data-theme="dark"] .aen-video-card,
 .aen-page[data-theme="dark"] .aen-faq-item,
-.aen-page[data-theme="dark"] .aen-carousel {
+.aen-page[data-theme="dark"] .aen-carousel,
+.aen-page[data-theme="dark"] .aen-client-card {
   border-color: rgba(226, 239, 239, 0.12);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
@@ -769,6 +861,16 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+.aen-page[data-theme="dark"] .aen-feature-tags span {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: var(--aen-text);
+}
+
+.aen-page[data-theme="dark"] .aen-benefits article {
+  border-color: rgba(226, 239, 239, 0.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
 .aen-page[data-theme="dark"] .aen-link-card span,
 .aen-page[data-theme="dark"] .aen-faq-icon {
   color: var(--aen-text);

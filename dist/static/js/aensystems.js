@@ -31,22 +31,6 @@
     update();
   });
 
-  const form = document.querySelector('[data-aen-mailto-form]');
-  if (form) {
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const data = new FormData(form);
-      const nome = data.get('nome') || '';
-      const empresa = data.get('empresa') || '';
-      const assunto = data.get('assunto') || 'Contato AEN Systems';
-      const mensagem = data.get('mensagem') || '';
-
-      const body = `Nome: ${nome}\nEmpresa: ${empresa}\n\nMensagem:\n${mensagem}`;
-      const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=aensistemas@gmail.com&su=${encodeURIComponent(assunto)}&body=${encodeURIComponent(body)}`;
-      window.open(gmail, '_blank', 'noopener');
-    });
-  }
-
   const faqItems = document.querySelectorAll('.aen-faq-toggle');
   faqItems.forEach((button) => {
     button.addEventListener('click', () => {
