@@ -51,6 +51,10 @@ if __name__ == "__main__":
         target.write_text(html, encoding="utf-8")
 
     shutil.copytree(STATIC, DIST / "static")
+    # Favicon at site root for browser tab
+    favicon_src = ROOT / "static" / "favicon.ico"
+    if favicon_src.exists():
+        shutil.copy2(favicon_src, DIST / "favicon.ico")
 
     # Basic 404 fallback
     not_found = DIST / "404.html"
