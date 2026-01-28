@@ -2,12 +2,12 @@
   --aen-primary: #1BB3A7;
   --aen-secondary: #47C16D;
   --aen-dark: #0E6F78;
-  --aen-bg: #F6FBFA;
+  --aen-bg: #EEF2F1;
   --aen-text: #0f172a;
   --aen-border: rgba(15, 23, 42, 0.12);
   --aen-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-  --aen-surface: #ffffff;
-  --aen-surface-2: rgba(255, 255, 255, 0.92);
+  --aen-surface: #F8FAF9;
+  --aen-surface-2: rgba(248, 250, 249, 0.94);
   --aen-muted: rgba(15, 23, 42, 0.72);
   color: var(--aen-text);
   font-family: "Futura BK", "Futura", "Trebuchet MS", "Segoe UI", sans-serif;
@@ -446,6 +446,7 @@
   object-fit: contain;
   opacity: 0;
   transition: opacity 0.2s ease;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18));
 }
 
 .aen-client-name {
@@ -918,4 +919,8 @@
 
 .aen-page:not([data-theme="dark"]) .aen-muted {
   color: rgba(15, 23, 42, 0.72);
+}
+
+.aen-page:not([data-theme="dark"]) .aen-client-card {
+  background: #E7ECEB;
 }
