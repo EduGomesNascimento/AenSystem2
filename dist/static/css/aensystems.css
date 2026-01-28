@@ -205,7 +205,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 20px;
+  margin: 16px 0 22px;
 }
 
 .aen-feature-tags span {
@@ -237,8 +237,9 @@
 
 .aen-benefits .aen-benefit-hero {
   grid-column: 1 / -1;
-  background: rgba(27, 179, 167, 0.08);
-  border-color: rgba(27, 179, 167, 0.2);
+  background: linear-gradient(135deg, rgba(27, 179, 167, 0.18), rgba(71, 193, 109, 0.16));
+  border-color: rgba(27, 179, 167, 0.32);
+  box-shadow: 0 16px 34px rgba(27, 179, 167, 0.18);
 }
 
 .aen-benefits strong {
