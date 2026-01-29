@@ -249,7 +249,7 @@
   text-decoration: none;
   font-weight: 600;
   border: none;
-  color: #0f1b18;
+  color: #ffffff;
   position: relative;
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
@@ -257,7 +257,7 @@
 }
 
 .aen-btn.primary {
-  color: #0f1b18;
+  color: #ffffff;
 }
 
 .aen-btn:hover,
@@ -340,7 +340,7 @@
   position: absolute;
   inset: auto 16px 16px auto;
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .aen-carousel-controls button {
@@ -685,8 +685,9 @@
 .aen-footer-social {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   font-weight: 600;
+  font-size: 0.8rem;
   color: var(--aen-muted);
 }
 
@@ -696,8 +697,8 @@
 }
 
 .aen-social {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
   border: 1px solid var(--aen-border);
   display: inline-flex;
@@ -709,8 +710,8 @@
 }
 
 .aen-social svg {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   fill: currentColor;
 }
 
@@ -780,7 +781,7 @@
   text-decoration: none;
   font-weight: 600;
   border: none;
-  color: #0f1b18;
+  color: #ffffff;
   position: relative;
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
@@ -788,7 +789,7 @@
 }
 
 .aen-page[data-theme="dark"] .aen-btn.primary {
-  color: #0f1b18;
+  color: #ffffff;
 }
 
 
@@ -887,49 +888,74 @@
 }
 
 .aen-fade-up {
-  animation: aen-fade-up 0.6s ease both;
+  animation: aen-fade-up 0.85s cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
 .aen-stagger > * {
   opacity: 0;
-  animation: aen-fade-up 0.7s ease both;
+  animation: aen-fade-up 0.95s cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
-.aen-stagger > *:nth-child(1){animation-delay:0.05s;}
-.aen-stagger > *:nth-child(2){animation-delay:0.12s;}
-.aen-stagger > *:nth-child(3){animation-delay:0.2s;}
-.aen-stagger > *:nth-child(4){animation-delay:0.28s;}
-.aen-stagger > *:nth-child(5){animation-delay:0.36s;}
+.aen-stagger > *:nth-child(1){animation-delay:0.08s;}
+.aen-stagger > *:nth-child(2){animation-delay:0.18s;}
+.aen-stagger > *:nth-child(3){animation-delay:0.28s;}
+.aen-stagger > *:nth-child(4){animation-delay:0.38s;}
+.aen-stagger > *:nth-child(5){animation-delay:0.48s;}
 
 @keyframes aen-fade-up {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .aen-btn {
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .aen-btn:hover {
-  transform: translateY(-4px) scale(1.03);
+  transform: translateY(-4px) scale(1.04);
 }
 
 .aen-pill {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
 }
 
 .aen-pill:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   box-shadow: 0 16px 32px rgba(14, 111, 120, 0.28);
 }
 
 .aen-card {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
 }
 
 .aen-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow: 0 18px 36px rgba(14, 111, 120, 0.24);
+}
+
+.aen-client-card {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, background 0.35s ease;
+}
+
+.aen-client-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(14, 111, 120, 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aen-fade-up,
+  .aen-stagger > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .aen-btn,
+  .aen-pill,
+  .aen-card,
+  .aen-client-card {
+    transition: none !important;
+  }
 }
 
 .aen-page[data-theme="dark"] .aen-card,
