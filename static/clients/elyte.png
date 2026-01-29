@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Página de presença online da Elyte" />
+
+    <link rel="shortcut icon" href="/imgs/favicon.ico" type="image/x-icon" />
+    <link
+      rel="preload"
+      href="./src/css/fonts/Montserrat-Medium.ttf"
+      as="font"
+      crossorigin="anonymous"
+    />
+
+    <title>Elyte</title>
+    <script async type="module" crossorigin src="/assets/index.c195a494.js"></script>
+    <link rel="stylesheet" href="/assets/index.820714a3.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <link rel="preload" href="data:application/javascript;base64,aW1wb3J0ICdAcXVhc2FyL2V4dHJhcy9tYXRlcmlhbC1pY29ucy9tYXRlcmlhbC1pY29ucy5jc3MnCmltcG9ydCAnYW5pbWF0ZS5jc3MnCmltcG9ydCB7IERpYWxvZywgTm90aWZ5LCBRdWFzYXIgfSBmcm9tICdxdWFzYXInCmltcG9ydCAncXVhc2FyL3NyYy9jc3MvaW5kZXguc2FzcycKaW1wb3J0IHsgY3JlYXRlQXBwIH0gZnJvbSAndnVlJwppbXBvcnQgQXBwIGZyb20gJy4vQXBwLnZ1ZScKaW1wb3J0ICcuL2Nzcy9zdHlsZS5jc3MnCmltcG9ydCBpMThuIGZyb20gJy4vaTE4bicKaW1wb3J0IHJvdXRlciBmcm9tICcuL3JvdXRlcycKCmNvbnN0IG15QXBwID0gY3JlYXRlQXBwKEFwcCkKCm15QXBwCiAgLnVzZShRdWFzYXIsIHsKICAgIHBsdWdpbnM6IHsKICAgICAgTm90aWZ5LAogICAgICBEaWFsb2cKICAgIH0KICB9KQogIC51c2Uocm91dGVyKQogIC51c2UoaTE4bikKICAubW91bnQoJyNhcHAnKQo=" as="script" />
+    
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4e4d649f15d5404e9acec6d44a53bf45","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
