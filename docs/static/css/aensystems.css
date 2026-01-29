@@ -248,17 +248,16 @@
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
-  border: 2px solid var(--aen-primary);
-  color: var(--aen-text);
+  border: none;
+  color: #0f1b18;
   position: relative;
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  background: linear-gradient(135deg, var(--aen-primary), var(--aen-secondary));
 }
 
 .aen-btn.primary {
-  background: linear-gradient(135deg, var(--aen-primary), var(--aen-secondary));
   color: #0f1b18;
-  border: none;
 }
 
 .aen-btn:hover,
