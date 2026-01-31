@@ -9,6 +9,9 @@
   --aen-surface: #F8FAF9;
   --aen-surface-2: rgba(248, 250, 249, 0.94);
   --aen-muted: rgba(15, 23, 42, 0.72);
+  --aen-btn-bg: linear-gradient(135deg, var(--aen-primary), var(--aen-secondary));
+  --aen-btn-text: #ffffff;
+  --aen-btn-border: rgba(14, 111, 120, 0.2);
   color: var(--aen-text);
   font-family: "Futura BK", "Futura", "Trebuchet MS", "Segoe UI", sans-serif;
   background: radial-gradient(circle at 10% 0%, rgba(27, 179, 167, 0.16), transparent 45%),
@@ -28,6 +31,9 @@
   --aen-surface: #151c1a;
   --aen-surface-2: rgba(21, 28, 26, 0.92);
   --aen-muted: rgba(210, 220, 216, 0.85);
+  --aen-btn-bg: linear-gradient(135deg, #3aaea0, #53c27a);
+  --aen-btn-text: #0b1416;
+  --aen-btn-border: rgba(226, 239, 239, 0.18);
   background: radial-gradient(circle at 10% 0%, rgba(42, 107, 98, 0.2), transparent 45%),
     radial-gradient(circle at 90% 10%, rgba(61, 122, 107, 0.18), transparent 40%),
     var(--aen-bg);
@@ -248,17 +254,18 @@
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
-  border: 2px solid var(--aen-primary);
-  color: var(--aen-text);
+  border: 1px solid var(--aen-btn-border);
+  color: var(--aen-btn-text);
   position: relative;
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  background: var(--aen-btn-bg);
 }
 
 .aen-btn.primary {
-  background: linear-gradient(135deg, var(--aen-primary), var(--aen-secondary));
-  color: #0f1b18;
-  border: none;
+  border-color: var(--aen-btn-border);
+  color: var(--aen-btn-text);
+  background: var(--aen-btn-bg);
 }
 
 .aen-btn:hover,
@@ -437,6 +444,15 @@
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
+}
+
+.aen-client-card.is-poker,
+.aen-client-card.is-ludfor,
+.aen-client-card.is-blocoville,
+.aen-client-card.is-hidromas {
+  background: var(--aen-surface);
+  border-color: var(--aen-border);
+  color: var(--aen-text);
 }
 
 .aen-client-card img {
@@ -701,23 +717,11 @@
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
-.aen-page[data-theme="dark"] .aen-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  border: 2px solid var(--aen-primary);
-  color: var(--aen-text);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-}
-
+.aen-page[data-theme="dark"] .aen-btn,
 .aen-page[data-theme="dark"] .aen-btn.primary {
-  color: #041013;
+  border-color: var(--aen-btn-border);
+  color: var(--aen-btn-text);
+  background: var(--aen-btn-bg);
 }
 
 
