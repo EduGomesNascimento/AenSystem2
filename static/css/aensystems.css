@@ -355,9 +355,21 @@
   border: none;
   background: rgba(14, 111, 120, 0.9);
   color: white;
-  padding: 8px 14px;
+  font-family: "Segoe UI Symbol", "Noto Sans Symbols", "Noto Sans", "Arial", sans-serif;
+  font-size: 16px;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.aen-carousel-controls button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .aen-video-grid {
