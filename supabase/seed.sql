@@ -30,6 +30,14 @@ set nome = 'Consultor PRODALY',
     mfa_required = true
 where email = 'consultor.prodaly@exemplo.com';
 
+update public.profiles
+set nome = 'Administrador AEN SYSTEMS',
+    empresa = null,
+    role = 'admin',
+    ativo = true,
+    mfa_required = true
+where email = 'aensistemas@gmail.com';
+
 insert into public.demandas (
   referencia_externa,
   empresa,

@@ -251,6 +251,100 @@
         </div>
       </section>
 
+      <section class="aen-card aen-gp-admin-panel" data-admin-panel hidden>
+        <div class="aen-gp-panel-head">
+          <div>
+            <span class="aen-gp-eyebrow">Gestão interna</span>
+            <h2>Painel administrativo da AEN SYSTEMS</h2>
+          </div>
+          <span class="aen-gp-lock" aria-hidden="true">Admin</span>
+        </div>
+
+        <p class="aen-muted">Use este painel para cadastrar, atualizar e excluir demandas e orçamentos no próprio site. A criação de usuários continua sendo feita no Supabase para não expor privilégios administrativos no navegador.</p>
+
+        <div class="aen-gp-admin-grid">
+          <div>
+            <label for="gp-admin-record">Carregar registro existente</label>
+            <select id="gp-admin-record" data-admin-record-select>
+              <option value="">Nova demanda</option>
+            </select>
+          </div>
+          <div class="aen-gp-admin-hint">
+            <strong>Conta administrativa recomendada</strong>
+            <p class="aen-muted">Crie o usuário <code>aensistemas@gmail.com</code> no Supabase Auth e defina o papel <code>admin</code> no perfil.</p>
+          </div>
+        </div>
+
+        <form class="aen-form aen-gp-admin-form" data-admin-form novalidate>
+          <input type="hidden" name="id">
+
+          <div>
+            <label for="gp-admin-ref">Referência externa</label>
+            <input id="gp-admin-ref" name="referencia_externa" type="text" maxlength="60" required placeholder="Ex.: INTA-003">
+          </div>
+          <div>
+            <label for="gp-admin-company">Empresa</label>
+            <select id="gp-admin-company" name="empresa" required>
+              <option value="">Selecione</option>
+              <option value="INTELECTA">INTELECTA</option>
+              <option value="PRODALY">PRODALY</option>
+            </select>
+          </div>
+          <div>
+            <label for="gp-admin-client">Cliente</label>
+            <input id="gp-admin-client" name="cliente" type="text" maxlength="140" required placeholder="Nome do cliente">
+          </div>
+          <div>
+            <label for="gp-admin-title">Título</label>
+            <input id="gp-admin-title" name="titulo" type="text" maxlength="160" required placeholder="Resumo da demanda ou orçamento">
+          </div>
+          <div class="is-full">
+            <label for="gp-admin-description">Descrição</label>
+            <textarea id="gp-admin-description" name="descricao" rows="4" placeholder="Descreva o escopo, o contexto e os próximos passos."></textarea>
+          </div>
+          <div>
+            <label for="gp-admin-status">Status</label>
+            <select id="gp-admin-status" name="status" required>
+              <option value="Aprovar">Aprovar</option>
+              <option value="Iniciar">Iniciar</option>
+              <option value="Desenvolvimento">Desenvolvimento</option>
+              <option value="Homologação">Homologação</option>
+              <option value="Finalizado">Finalizado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div>
+            <label for="gp-admin-priority">Prioridade</label>
+            <select id="gp-admin-priority" name="prioridade" required>
+              <option value="Baixa">Baixa</option>
+              <option value="Media">Média</option>
+              <option value="Alta">Alta</option>
+              <option value="Critica">Crítica</option>
+            </select>
+          </div>
+          <div>
+            <label for="gp-admin-owner">Responsável</label>
+            <input id="gp-admin-owner" name="responsavel" type="text" maxlength="120" required placeholder="Equipe ou pessoa responsável">
+          </div>
+          <div>
+            <label for="gp-admin-estimate">Horas previstas</label>
+            <input id="gp-admin-estimate" name="horas_previstas" type="number" min="0" step="0.5" value="0">
+          </div>
+          <div>
+            <label for="gp-admin-spent">Horas gastas</label>
+            <input id="gp-admin-spent" name="horas_gastas" type="number" min="0" step="0.5" value="0">
+          </div>
+
+          <div class="aen-gp-admin-actions is-full">
+            <button class="aen-btn primary" type="submit" data-admin-save-submit>Salvar registro</button>
+            <button class="aen-btn" type="button" data-admin-reset-button>Nova demanda</button>
+            <button class="aen-btn danger" type="button" data-admin-delete-button hidden>Excluir registro</button>
+          </div>
+        </form>
+
+        <div class="aen-gp-inline-state" data-admin-feedback aria-live="polite"></div>
+      </section>
+
       <div class="aen-gp-alert" data-dashboard-feedback hidden aria-live="polite"></div>
 
       <div class="aen-gp-state" data-loading-state hidden>
@@ -277,6 +371,7 @@
               <th scope="col">Responsável</th>
               <th scope="col">Horas</th>
               <th scope="col">Atualização</th>
+              <th scope="col" data-admin-actions-head hidden>Ações</th>
             </tr>
           </thead>
           <tbody data-demandas-body></tbody>

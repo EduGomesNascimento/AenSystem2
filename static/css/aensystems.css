@@ -1419,6 +1419,81 @@
   border-top: 1px solid var(--aen-border);
 }
 
+.aen-gp-admin-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.aen-gp-admin-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: end;
+}
+
+.aen-gp-admin-hint {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(14, 111, 120, 0.12);
+  background: rgba(27, 179, 167, 0.06);
+}
+
+.aen-gp-admin-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.aen-gp-admin-form .is-full {
+  grid-column: 1 / -1;
+}
+
+.aen-gp-admin-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.aen-gp-table-actions,
+.aen-gp-mobile-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.aen-gp-action-btn {
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(14, 111, 120, 0.14);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--aen-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.aen-gp-action-btn:hover,
+.aen-gp-action-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  border-color: rgba(27, 179, 167, 0.3);
+}
+
+.aen-gp-action-btn.is-danger,
+.aen-btn.danger {
+  border-color: rgba(161, 25, 42, 0.18);
+  background: rgba(161, 25, 42, 0.08);
+  color: #8d1523;
+}
+
+.aen-btn.danger:hover,
+.aen-btn.danger:focus-visible {
+  border-color: rgba(161, 25, 42, 0.28);
+  box-shadow: 0 10px 20px rgba(161, 25, 42, 0.12);
+}
+
 .aen-page[data-theme="dark"] .aen-gp-panel,
 .aen-page[data-theme="dark"] .aen-gp-toolbar-card,
 .aen-page[data-theme="dark"] .aen-gp-dashboard-head,
@@ -1598,8 +1673,14 @@
 }
 
 @media (max-width: 720px) {
+  .aen-gp-admin-grid,
+  .aen-gp-admin-form {
+    grid-template-columns: 1fr;
+  }
+
   .aen-gp-toolbar-footer,
-  .aen-gp-mobile-card-head {
+  .aen-gp-mobile-card-head,
+  .aen-gp-admin-actions {
     flex-direction: column;
     align-items: flex-start;
   }

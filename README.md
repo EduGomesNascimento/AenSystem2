@@ -49,7 +49,7 @@ O site no GitHub Pages entrega apenas arquivos estáticos. Por isso:
 
 - `gp`: visualiza somente demandas da própria empresa
 - `consultor`: visualiza somente demandas da própria empresa e precisa concluir MFA
-- `admin`: preparado para expansão futura; no schema atual pode consultar o escopo administrativo autorizado pelas policies
+- `admin`: gerencia demandas e orçamentos dentro do próprio site, com escrita liberada apenas pelas policies de RLS
 
 ## Estrutura de banco
 
@@ -161,6 +161,11 @@ Os únicos status liberados para a Área das GPs são:
 
 Tudo fora disso fica bloqueado no banco, não apenas escondido no front-end.
 
+Exceção administrativa:
+
+- contas `admin` ativas e autorizadas podem consultar todos os registros para gestão interna no painel administrativo do site
+- `insert`, `update` e `delete` em `demandas` são permitidos apenas para `admin`
+
 ## Configuração passo a passo
 
 ### 1. Criar o projeto no Supabase
@@ -183,6 +188,18 @@ Tudo fora disso fica bloqueado no banco, não apenas escondido no front-end.
 2. Crie os usuários manualmente.
 3. A trigger cria a linha em `profiles`.
 4. Atualize empresa, papel e MFA conforme necessário.
+
+Conta administrativa recomendada:
+
+```sql
+update public.profiles
+set nome = 'Administrador AEN SYSTEMS',
+    empresa = null,
+    role = 'admin',
+    ativo = true,
+    mfa_required = true
+where email = 'aensistemas@gmail.com';
+```
 
 Exemplo para contas `gp`:
 

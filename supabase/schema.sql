@@ -161,7 +161,9 @@ returns trigger
 language plpgsql
 as $$
 begin
-  new.updated_at = timezone('utc', now());
+  if tg_table_schema = 'public' and tg_table_name in ('profiles', 'demandas') then
+    new.updated_at = timezone('utc', now());
+  end if;
   return new;
 end;
 $$;
@@ -248,6 +250,7 @@ revoke all on public.audit_logs from anon, authenticated;
 
 grant select on public.profiles to authenticated;
 grant select on public.demandas to authenticated;
+grant insert, update, delete on public.demandas to authenticated;
 grant select on public.audit_logs to authenticated;
 revoke execute on function public.log_audit_event(text, text, jsonb) from public, anon;
 revoke execute on function public.current_aal() from public, anon;
@@ -269,16 +272,101 @@ as restrictive
 for select
 to authenticated
 using (
-  status = any (array['Aprovar', 'Iniciar', 'Desenvolvimento']::text[])
-  and exists (
+  (
+    exists (
+      select 1
+      from public.profiles as p
+      where p.id = auth.uid()
+        and p.ativo = true
+        and p.role = 'admin'
+        and (
+          p.mfa_required = false
+          or public.current_aal() = 'aal2'
+        )
+    )
+  )
+  or (
+    status = any (array['Aprovar', 'Iniciar', 'Desenvolvimento']::text[])
+    and exists (
+      select 1
+      from public.profiles as p
+      where p.id = auth.uid()
+        and p.ativo = true
+        and p.empresa = demandas.empresa
+        and (
+          p.mfa_required = false
+          or public.current_aal() = 'aal2'
+        )
+    )
+  )
+);
+
+drop policy if exists "demandas_insert_admin" on public.demandas;
+create policy "demandas_insert_admin"
+on public.demandas
+as restrictive
+for insert
+to authenticated
+with check (
+  exists (
     select 1
     from public.profiles as p
     where p.id = auth.uid()
       and p.ativo = true
+      and p.role = 'admin'
       and (
-        p.role = 'admin'
-        or p.empresa = demandas.empresa
+        p.mfa_required = false
+        or public.current_aal() = 'aal2'
       )
+  )
+);
+
+drop policy if exists "demandas_update_admin" on public.demandas;
+create policy "demandas_update_admin"
+on public.demandas
+as restrictive
+for update
+to authenticated
+using (
+  exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+      and p.ativo = true
+      and p.role = 'admin'
+      and (
+        p.mfa_required = false
+        or public.current_aal() = 'aal2'
+      )
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+      and p.ativo = true
+      and p.role = 'admin'
+      and (
+        p.mfa_required = false
+        or public.current_aal() = 'aal2'
+      )
+  )
+);
+
+drop policy if exists "demandas_delete_admin" on public.demandas;
+create policy "demandas_delete_admin"
+on public.demandas
+as restrictive
+for delete
+to authenticated
+using (
+  exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+      and p.ativo = true
+      and p.role = 'admin'
       and (
         p.mfa_required = false
         or public.current_aal() = 'aal2'
