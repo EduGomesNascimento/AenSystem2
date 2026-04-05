@@ -625,16 +625,40 @@
         await resetSessionAndShowGuest("A configuração do acesso está desatualizada no Supabase. Reaplique o schema e tente novamente.", "error");
         return false;
       }
-      throw ensured.error;
+      console.warn(ensured.error);
     }
 
-    const profile = await state.client
+    let profile = await state.client
       .from("profiles")
       .select("id, email, nome, empresa, role, ativo, mfa_required")
       .eq("id", state.session.user.id)
       .maybeSingle();
     if (profile.error) throw profile.error;
     state.profile = profile.data || null;
+
+    if (!state.profile) {
+      const email = String((state.session.user && state.session.user.email) || "").trim().toLowerCase();
+      const payload = {
+        id: state.session.user.id,
+        email: email,
+        nome: email === "aensistemas@gmail.com" ? "Administrador AEN SYSTEMS" : null,
+        empresa: null,
+        role: email === "aensistemas@gmail.com" ? "admin" : "gp",
+        ativo: true,
+        mfa_required: false
+      };
+      const bootstrap = await state.client.from("profiles").insert(payload);
+      if (bootstrap.error && bootstrap.error.code !== "23505") {
+        console.warn(bootstrap.error);
+      }
+      profile = await state.client
+        .from("profiles")
+        .select("id, email, nome, empresa, role, ativo, mfa_required")
+        .eq("id", state.session.user.id)
+        .maybeSingle();
+      if (profile.error) throw profile.error;
+      state.profile = profile.data || null;
+    }
 
     if (!state.profile) {
       await logAudit("access_denied", "warning", { reason: "profile_missing" });

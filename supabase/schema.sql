@@ -287,6 +287,7 @@ revoke all on public.demandas from anon, authenticated;
 revoke all on public.audit_logs from anon, authenticated;
 
 grant select on public.profiles to authenticated;
+grant insert on public.profiles to authenticated;
 grant select on public.demandas to authenticated;
 grant insert, update, delete on public.demandas to authenticated;
 grant select on public.audit_logs to authenticated;
@@ -304,6 +305,33 @@ as restrictive
 for select
 to authenticated
 using (auth.uid() is not null and id = auth.uid());
+
+drop policy if exists "profiles_insert_self_bootstrap" on public.profiles;
+create policy "profiles_insert_self_bootstrap"
+on public.profiles
+as restrictive
+for insert
+to authenticated
+with check (
+  auth.uid() is not null
+  and id = auth.uid()
+  and lower(coalesce(email, '')) = lower(coalesce(auth.jwt() ->> 'email', ''))
+  and (
+    (
+      lower(coalesce(email, '')) = 'aensistemas@gmail.com'
+      and role = 'admin'
+      and empresa is null
+      and ativo = true
+      and mfa_required = false
+    )
+    or (
+      lower(coalesce(email, '')) <> 'aensistemas@gmail.com'
+      and role = 'gp'
+      and ativo = true
+      and mfa_required = false
+    )
+  )
+);
 
 drop policy if exists "demandas_select_authorized" on public.demandas;
 create policy "demandas_select_authorized"
