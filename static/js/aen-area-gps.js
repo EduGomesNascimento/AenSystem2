@@ -668,7 +668,7 @@
 
     if (!state.profile && !fromExplicitLogin) {
       await logAudit("access_denied", "warning", { reason: "profile_missing", sync_reason: syncReason });
-      await resetSessionAndShowGuest("FaÃ§a login para acessar a Ãrea das GPs.", "info");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
       return false;
     }
 
@@ -683,7 +683,7 @@
 
     if (!state.profile.ativo && !fromExplicitLogin) {
       await logAudit("access_denied", "warning", { reason: "inactive_profile", sync_reason: syncReason });
-      await resetSessionAndShowGuest("FaÃ§a login para acessar a Ãrea das GPs.", "info");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
       return false;
     }
 
@@ -695,7 +695,7 @@
 
     if (!state.profile.empresa && !isAdmin() && !fromExplicitLogin) {
       await logAudit("access_denied", "warning", { reason: "company_missing", sync_reason: syncReason });
-      await resetSessionAndShowGuest("Faca login para acessar a Area das GPs.", "info");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
       return false;
     }
 
