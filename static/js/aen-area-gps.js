@@ -22,6 +22,9 @@
     publicShell: document.querySelector("[data-gp-public-shell]"),
     boot: root.querySelector("[data-boot-state]"),
     guest: root.querySelector("[data-guest-view]"),
+    loginModal: root.querySelector("[data-login-modal]"),
+    loginOpenButton: root.querySelector("[data-login-open-button]"),
+    loginCloseButtons: root.querySelectorAll("[data-login-close]"),
     mfa: root.querySelector("[data-mfa-view]"),
     private: root.querySelector("[data-private-view]"),
     configAlert: root.querySelector("[data-config-alert]"),
@@ -113,6 +116,17 @@
     hide(refs.guest, view !== VIEW.guest);
     hide(refs.mfa, view !== VIEW.mfa);
     hide(refs.private, view !== VIEW.private);
+    if (view !== VIEW.guest) closeLoginModal();
+  }
+
+  function openLoginModal() {
+    hide(refs.loginModal, false);
+    const emailInput = refs.loginForm ? refs.loginForm.querySelector('input[name="email"]') : null;
+    if (emailInput) window.setTimeout(function () { emailInput.focus(); }, 0);
+  }
+
+  function closeLoginModal() {
+    hide(refs.loginModal, true);
   }
 
   function setBusy(yes) {
@@ -396,6 +410,7 @@
     setInline(refs.mfaFeedback, "", "info");
     setView(VIEW.guest);
     setInline(refs.loginFeedback, message || "", tone || "info");
+    openLoginModal();
   }
 
   function showMfa(mode, title, description) {
@@ -845,6 +860,17 @@
   }
 
   function bind() {
+    if (refs.loginOpenButton) refs.loginOpenButton.addEventListener("click", openLoginModal);
+    if (refs.loginCloseButtons && refs.loginCloseButtons.length) {
+      refs.loginCloseButtons.forEach(function (button) {
+        button.addEventListener("click", closeLoginModal);
+      });
+    }
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && refs.loginModal && !refs.loginModal.hidden) {
+        closeLoginModal();
+      }
+    });
     if (refs.loginForm) refs.loginForm.addEventListener("submit", handleLogin);
     if (refs.mfaEnrollForm) refs.mfaEnrollForm.addEventListener("submit", handleEnroll);
     if (refs.mfaChallengeForm) refs.mfaChallengeForm.addEventListener("submit", handleChallenge);

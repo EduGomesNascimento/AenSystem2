@@ -1066,6 +1066,12 @@
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(248, 250, 249, 0.98));
 }
 
+.aen-gp-guest-actions {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+
 .aen-gp-panel-head,
 .aen-gp-dashboard-head {
   display: flex;
@@ -1119,6 +1125,56 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.aen-gp-modal-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.aen-gp-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 15, 28, 0.52);
+  backdrop-filter: blur(10px);
+}
+
+.aen-gp-modal {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 560px);
+  padding: 28px;
+  gap: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(14, 111, 120, 0.12);
+  box-shadow: 0 24px 80px rgba(8, 15, 28, 0.28);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(248, 250, 249, 0.99));
+}
+
+.aen-gp-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--aen-dark);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.aen-gp-modal-close:hover,
+.aen-gp-modal-close:focus-visible {
+  background: rgba(15, 23, 42, 0.12);
+  transform: scale(1.04);
 }
 
 .aen-gp-kpi-label {
@@ -1673,6 +1729,14 @@
 }
 
 @media (max-width: 720px) {
+  .aen-gp-modal-shell {
+    padding: 16px;
+  }
+
+  .aen-gp-modal {
+    padding: 22px 18px;
+  }
+
   .aen-gp-admin-grid,
   .aen-gp-admin-form {
     grid-template-columns: 1fr;

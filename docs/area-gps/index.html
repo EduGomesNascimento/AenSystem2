@@ -83,27 +83,18 @@
       <article class="aen-card aen-gp-panel">
         <div class="aen-gp-panel-head">
           <div>
-            <span class="aen-gp-eyebrow">Login</span>
-            <h2>Entrar na Área das GPs</h2>
+            <span class="aen-gp-eyebrow">Acesso reservado</span>
+            <h2>Ambiente privado para gestão em andamento</h2>
           </div>
-          <span class="aen-gp-lock" aria-hidden="true">Acesso</span>
+          <span class="aen-gp-lock" aria-hidden="true">Privado</span>
         </div>
 
-        <p class="aen-muted">Use o acesso corporativo criado pela AEN SYSTEMS. Esta área não possui auto cadastro e o conteúdo é liberado somente após autenticação válida.</p>
+        <p class="aen-muted">O acesso à Área das GPs é liberado somente para usuários autorizados pela AEN SYSTEMS. Use o botão abaixo para abrir o login seguro e validar sua sessão.</p>
 
-        <form class="aen-form aen-gp-login-form" data-login-form novalidate>
-          <div>
-            <label for="gp-email">E-mail</label>
-            <input id="gp-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="nome@empresa.com.br">
-          </div>
-          <div>
-            <label for="gp-password">Senha</label>
-            <input id="gp-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha">
-          </div>
-          <button class="aen-btn primary" type="submit" data-login-submit>Entrar</button>
-        </form>
-
-        <div class="aen-gp-inline-state" data-login-feedback aria-live="polite"></div>
+        <div class="aen-gp-guest-actions">
+          <button class="aen-btn primary" type="button" data-login-open-button>Acessar Área das GPs</button>
+          <p class="aen-muted">Sem cadastro público. Contas são provisionadas manualmente.</p>
+        </div>
       </article>
 
       <article class="aen-card aen-gp-panel aen-gp-panel-muted">
@@ -123,6 +114,36 @@
             <p class="aen-muted">Contas com papel consultor exigem autenticação adicional por aplicativo autenticador.</p>
           </div>
         </div>
+      </article>
+    </div>
+
+    <div class="aen-gp-modal-shell" data-login-modal hidden>
+      <div class="aen-gp-modal-backdrop" data-login-close></div>
+      <article class="aen-card aen-gp-modal" role="dialog" aria-modal="true" aria-labelledby="gp-login-title">
+        <button class="aen-gp-modal-close" type="button" data-login-close aria-label="Fechar login">×</button>
+        <div class="aen-gp-panel-head">
+          <div>
+            <span class="aen-gp-eyebrow">Login</span>
+            <h2 id="gp-login-title">Entrar na Área das GPs</h2>
+          </div>
+          <span class="aen-gp-lock" aria-hidden="true">Acesso</span>
+        </div>
+
+        <p class="aen-muted">Use o acesso corporativo criado pela AEN SYSTEMS. O conteúdo é liberado somente após autenticação válida.</p>
+
+        <form class="aen-form aen-gp-login-form" data-login-form novalidate>
+          <div>
+            <label for="gp-email">E-mail</label>
+            <input id="gp-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="nome@empresa.com.br">
+          </div>
+          <div>
+            <label for="gp-password">Senha</label>
+            <input id="gp-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha">
+          </div>
+          <button class="aen-btn primary" type="submit" data-login-submit>Entrar</button>
+        </form>
+
+        <div class="aen-gp-inline-state" data-login-feedback aria-live="polite"></div>
       </article>
     </div>
 
