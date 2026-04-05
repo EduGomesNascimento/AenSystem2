@@ -91,7 +91,11 @@
   };
 
   const hide = (el, yes) => el && (el.hidden = yes);
-  const isAdmin = () => Boolean(state.profile && state.profile.role === "admin");
+  const isAdmin = () => Boolean(
+    state.profile
+    && state.profile.role === "admin"
+    && String(state.profile.email || "").toLowerCase() === "aensistemas@gmail.com"
+  );
   const mfaRequired = () => Boolean(state.profile && state.profile.mfa_required);
   const esc = (value) => String(value || "")
     .replace(/&/g, "&amp;")

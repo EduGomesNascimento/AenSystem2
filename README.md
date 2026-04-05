@@ -49,7 +49,7 @@ O site no GitHub Pages entrega apenas arquivos estáticos. Por isso:
 
 - `gp`: visualiza somente demandas da própria empresa
 - `consultor`: visualiza somente demandas da própria empresa e precisa concluir MFA
-- `admin`: gerencia demandas e orçamentos dentro do próprio site, com escrita liberada apenas pelas policies de RLS
+- `admin`: gerencia demandas e orçamentos dentro do próprio site, com escrita liberada apenas pelas policies de RLS; no cenário atual, esse acesso administrativo está reservado à conta `aensistemas@gmail.com`
 
 ## Estrutura de banco
 

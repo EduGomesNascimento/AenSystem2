@@ -283,6 +283,7 @@ using (
       where p.id = auth.uid()
         and p.ativo = true
         and p.role = 'admin'
+        and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
         and (
           p.mfa_required = false
           or public.current_aal() = 'aal2'
@@ -318,6 +319,7 @@ with check (
     where p.id = auth.uid()
       and p.ativo = true
       and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
       and (
         p.mfa_required = false
         or public.current_aal() = 'aal2'
@@ -338,6 +340,7 @@ using (
     where p.id = auth.uid()
       and p.ativo = true
       and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
       and (
         p.mfa_required = false
         or public.current_aal() = 'aal2'
@@ -351,6 +354,7 @@ with check (
     where p.id = auth.uid()
       and p.ativo = true
       and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
       and (
         p.mfa_required = false
         or public.current_aal() = 'aal2'
@@ -371,6 +375,7 @@ using (
     where p.id = auth.uid()
       and p.ativo = true
       and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
       and (
         p.mfa_required = false
         or public.current_aal() = 'aal2'
@@ -392,6 +397,7 @@ using (
     where p.id = auth.uid()
       and p.ativo = true
       and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
       and (p.mfa_required = false or public.current_aal() = 'aal2')
   )
 );
