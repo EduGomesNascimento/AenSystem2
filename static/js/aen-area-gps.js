@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const root = document.querySelector("[data-gp-app]");
   if (!root) return;
 
@@ -17,6 +17,7 @@
     Critica: "is-critical"
   };
   const VIEW = { boot: "boot", guest: "guest", mfa: "mfa", private: "private" };
+  const SYNC_REASON = { restore: "restore", login: "login", mfa: "mfa", session: "session" };
 
   const refs = {
     publicShell: document.querySelector("[data-gp-public-shell]"),
@@ -228,6 +229,7 @@
     refs.loginModal.classList.remove("is-closing");
     refs.loginModal.dataset.closing = "false";
     state.loginModalClosableAt = Date.now() + 450;
+    if (!state.authBusy) setInline(refs.loginFeedback, "", "info");
     const emailInput = refs.loginForm ? refs.loginForm.querySelector('input[name="email"]') : null;
     if (emailInput) window.setTimeout(function () { emailInput.focus(); }, 0);
   }
@@ -618,7 +620,9 @@
     refs.adminForm.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  async function enforceAccess() {
+  async function enforceAccess(reason) {
+    const syncReason = reason || SYNC_REASON.restore;
+    const fromExplicitLogin = syncReason === SYNC_REASON.login || syncReason === SYNC_REASON.mfa;
     const ensured = await state.client.rpc("ensure_my_profile");
     if (ensured.error) {
       if (isMissingFunctionError(ensured.error, "ensure_my_profile")) {
@@ -660,6 +664,12 @@
       state.profile = profile.data || null;
     }
 
+    if (!state.profile && !fromExplicitLogin) {
+      await logAudit("access_denied", "warning", { reason: "profile_missing", sync_reason: syncReason });
+      await resetSessionAndShowGuest("FaÃ§a login para acessar a Ãrea das GPs.", "info");
+      return false;
+    }
+
     if (!state.profile) {
       await logAudit("access_denied", "warning", { reason: "profile_missing" });
       await resetSessionAndShowGuest("Seu perfil ainda não foi configurado. Solicite o vínculo ao administrador.", "warning");
@@ -669,9 +679,21 @@
     await fetchAal();
     renderProfile();
 
+    if (!state.profile.ativo && !fromExplicitLogin) {
+      await logAudit("access_denied", "warning", { reason: "inactive_profile", sync_reason: syncReason });
+      await resetSessionAndShowGuest("FaÃ§a login para acessar a Ãrea das GPs.", "info");
+      return false;
+    }
+
     if (!state.profile.ativo) {
       await logAudit("access_denied", "warning", { reason: "inactive_profile" });
       await resetSessionAndShowGuest("Seu acesso está desativado. Solicite revisão ao administrador.", "warning");
+      return false;
+    }
+
+    if (!state.profile.empresa && !isAdmin() && !fromExplicitLogin) {
+      await logAudit("access_denied", "warning", { reason: "company_missing", sync_reason: syncReason });
+      await resetSessionAndShowGuest("Faca login para acessar a Area das GPs.", "info");
       return false;
     }
 
@@ -766,6 +788,7 @@
 
   async function syncSessionInternal(opts) {
     const options = opts || {};
+    const reason = options.reason || SYNC_REASON.restore;
     if (!options.silent) setBoot("Validando sessão e regras de acesso...");
     const session = await state.client.auth.getSession();
     state.session = session.data ? session.data.session : null;
@@ -778,7 +801,7 @@
       await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
       return;
     }
-    if (await enforceAccess()) await loadDashboard();
+    if (await enforceAccess(reason)) await loadDashboard();
   }
 
   function authError(error) {
@@ -805,7 +828,7 @@
     setInline(refs.loginFeedback, "Validando acesso...", "info");
     try {
       if (state.session) {
-        await syncSession({ silent: true });
+        await syncSession({ silent: true, reason: SYNC_REASON.login });
         return;
       }
       const result = await state.client.auth.signInWithPassword({ email: email, password: password });
@@ -818,7 +841,7 @@
         console.warn("Não foi possível encerrar sessões antigas.", error);
       }
       setInline(refs.loginFeedback, "Senha validada. Conferindo perfil e MFA...", "success");
-      await syncSession({ silent: true });
+      await syncSession({ silent: true, reason: SYNC_REASON.login });
       await logAudit("login_success", "success", { aal: state.aal.currentLevel });
     } catch (error) {
       console.error(error);
@@ -849,7 +872,7 @@
       await fetchAal();
       await logAudit("mfa_enroll_completed", "success", { aal: state.aal.currentLevel });
       setInline(refs.mfaFeedback, "MFA ativado com sucesso. Liberando a área privada...", "success");
-      await syncSession({ silent: true });
+      await syncSession({ silent: true, reason: SYNC_REASON.mfa });
     } catch (error) {
       console.error(error);
       setInline(refs.mfaFeedback, "Não foi possível validar o código informado.", "error");
@@ -876,7 +899,7 @@
       await fetchAal();
       await logAudit("mfa_challenge_completed", "success", { aal: state.aal.currentLevel });
       setInline(refs.mfaFeedback, "MFA validado. Carregando a área privada...", "success");
-      await syncSession({ silent: true });
+      await syncSession({ silent: true, reason: SYNC_REASON.mfa });
     } catch (error) {
       console.error(error);
       setInline(refs.mfaFeedback, "Código MFA inválido ou expirado.", "error");
@@ -1054,7 +1077,7 @@
           !state.authBusy
           && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "MFA_CHALLENGE_VERIFIED")
         ) {
-          syncSession({ silent: true });
+          syncSession({ silent: true, reason: SYNC_REASON.session });
         }
       }, 0);
     });
@@ -1074,6 +1097,9 @@
       });
     }
     if (refs.loginForm) refs.loginForm.addEventListener("submit", handleLogin);
+    if (refs.loginForm) refs.loginForm.addEventListener("input", function () {
+      if (!state.authBusy) setInline(refs.loginFeedback, "", "info");
+    });
     if (refs.mfaEnrollForm) refs.mfaEnrollForm.addEventListener("submit", handleEnroll);
     if (refs.mfaChallengeForm) refs.mfaChallengeForm.addEventListener("submit", handleChallenge);
   }
@@ -1084,7 +1110,7 @@
     setBoot("Validando sessão e regras de acesso...");
     if (!initSupabase()) return;
     try {
-      await syncSession({ silent: false });
+      await syncSession({ silent: false, reason: SYNC_REASON.restore });
     } catch (error) {
       console.error(error);
       showGuest("Não foi possível inicializar a Área das GPs. Revise a configuração do Supabase e tente novamente.", "error");
@@ -1093,3 +1119,4 @@
 
   init();
 })();
+

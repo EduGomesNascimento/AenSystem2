@@ -28,14 +28,22 @@ def git_output(*args: str) -> str:
     ).strip()
 
 
+def git_is_dirty() -> bool:
+    try:
+        return bool(git_output("status", "--short"))
+    except Exception:
+        return False
+
+
 def get_site_version() -> str:
     override = os.environ.get("AEN_SITE_VERSION", "").strip()
     if override:
         return override
     try:
-        count = git_output("rev-list", "--count", "HEAD")
-        short_hash = git_output("rev-parse", "--short", "HEAD")
-        return f"v{count}-{short_hash}"
+        count = int(git_output("rev-list", "--count", "HEAD"))
+        if git_is_dirty():
+            count += 1
+        return f"v{count}"
     except Exception:
         return "v0-dev"
 
