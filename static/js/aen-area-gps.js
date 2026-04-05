@@ -91,7 +91,8 @@
     filters: { search: "", status: "Todos", priority: "Todas", owner: "Todos" },
     authBusy: false,
     loginModalClosableAt: 0,
-    syncInFlight: null
+    syncInFlight: null,
+    suppressSignedOutEvent: false
   };
 
   const hide = (el, yes) => el && (el.hidden = yes);
@@ -537,6 +538,22 @@
     openLoginModal();
   }
 
+  async function resetSessionAndShowGuest(message, tone, options) {
+    const settings = options || {};
+    state.suppressSignedOutEvent = true;
+    state.session = null;
+    state.profile = null;
+    try {
+      if (state.client) {
+        const result = await state.client.auth.signOut({ scope: settings.scope || "local" });
+        if (result && result.error) console.warn(result.error);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    showGuest(message || "", tone || "info");
+  }
+
   function showMfa(mode, title, description) {
     setView(VIEW.mfa);
     hide(refs.mfaEnrollPanel, mode !== "enroll");
@@ -608,8 +625,7 @@
 
     if (!state.profile) {
       await logAudit("access_denied", "warning", { reason: "profile_missing" });
-      await state.client.auth.signOut();
-      showGuest("Seu perfil ainda não foi configurado. Solicite o vínculo ao administrador.", "warning");
+      await resetSessionAndShowGuest("Seu perfil ainda não foi configurado. Solicite o vínculo ao administrador.", "warning");
       return false;
     }
 
@@ -618,15 +634,13 @@
 
     if (!state.profile.ativo) {
       await logAudit("access_denied", "warning", { reason: "inactive_profile" });
-      await state.client.auth.signOut();
-      showGuest("Seu acesso está desativado. Solicite revisão ao administrador.", "warning");
+      await resetSessionAndShowGuest("Seu acesso está desativado. Solicite revisão ao administrador.", "warning");
       return false;
     }
 
     if (!state.profile.empresa && !isAdmin()) {
       await logAudit("access_denied", "warning", { reason: "company_missing" });
-      await state.client.auth.signOut();
-      showGuest("Seu usuário não está vinculado a uma empresa autorizada.", "warning");
+      await resetSessionAndShowGuest("Seu usuário não está vinculado a uma empresa autorizada.", "warning");
       return false;
     }
 
@@ -724,8 +738,7 @@
     }
     const user = await state.client.auth.getUser();
     if (user.error || !user.data || !user.data.user) {
-      await state.client.auth.signOut();
-      showGuest("Sua sessão expirou ou não pôde ser validada. Faça login novamente.", "warning");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
       return;
     }
     if (await enforceAccess()) await loadDashboard();
@@ -762,6 +775,11 @@
       if (result.error) throw result.error;
       refs.loginForm.reset();
       state.session = result.data ? result.data.session : null;
+      try {
+        await state.client.auth.signOut({ scope: "others" });
+      } catch (error) {
+        console.warn("Não foi possível encerrar sessões antigas.", error);
+      }
       setInline(refs.loginFeedback, "Senha validada. Conferindo perfil e MFA...", "success");
       await syncSession({ silent: true });
       await logAudit("login_success", "success", { aal: state.aal.currentLevel });
@@ -835,6 +853,7 @@
     setDash("Encerrando sessão...", "info");
     try {
       await logAudit("logout", "success", { aal: state.aal.currentLevel });
+      state.suppressSignedOutEvent = true;
       const result = await state.client.auth.signOut();
       if (result.error) throw result.error;
       showGuest("Sessão encerrada com sucesso.", "success");
@@ -982,17 +1001,17 @@
       }
     });
     state.client.auth.onAuthStateChange(function (event, session) {
-      const hadSession = Boolean(state.session);
       state.session = session;
       window.setTimeout(function () {
         if (event === "INITIAL_SESSION") {
           return;
         }
+        if (!session && state.suppressSignedOutEvent && event === "SIGNED_OUT") {
+          state.suppressSignedOutEvent = false;
+          return;
+        }
         if (!session) {
-          return showGuest(
-            hadSession && event === "SIGNED_OUT" ? "Sua sessão foi encerrada. Faça login novamente." : "",
-            hadSession && event === "SIGNED_OUT" ? "warning" : "info"
-          );
+          return showGuest("", "info");
         }
         if (
           !state.authBusy
