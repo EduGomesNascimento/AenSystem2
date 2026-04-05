@@ -88,7 +88,9 @@
     visible: [],
     aal: { currentLevel: "aal1", nextLevel: "aal1" },
     mfa: { factorId: null, qrCode: "", secret: "", verified: [] },
-    filters: { search: "", status: "Todos", priority: "Todas", owner: "Todos" }
+    filters: { search: "", status: "Todos", priority: "Todas", owner: "Todos" },
+    authBusy: false,
+    loginModalClosableAt: 0
   };
 
   const hide = (el, yes) => el && (el.hidden = yes);
@@ -218,6 +220,8 @@
   function openLoginModal() {
     hide(refs.loginModal, false);
     refs.loginModal.classList.remove("is-closing");
+    refs.loginModal.dataset.closing = "false";
+    state.loginModalClosableAt = Date.now() + 450;
     const emailInput = refs.loginForm ? refs.loginForm.querySelector('input[name="email"]') : null;
     if (emailInput) window.setTimeout(function () { emailInput.focus(); }, 0);
   }
@@ -241,6 +245,14 @@
   }
 
   function redirectHomeFromLoginModal() {
+    if (
+      state.authBusy
+      || !refs.loginModal
+      || refs.loginModal.hidden
+      || Date.now() < state.loginModalClosableAt
+    ) {
+      return;
+    }
     closeLoginModal({
       onDone: function () {
         window.location.assign("/");
@@ -249,7 +261,9 @@
   }
 
   function setBusy(yes) {
+    state.authBusy = yes;
     [
+      "loginCloseButton",
       "loginSubmit",
       "refreshButton",
       "logoutButton",
@@ -972,13 +986,12 @@
   function bind() {
     if (refs.loginOpenButton) refs.loginOpenButton.addEventListener("click", openLoginModal);
     if (refs.loginCloseButton) {
-      refs.loginCloseButton.addEventListener("click", redirectHomeFromLoginModal);
-    }
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && refs.loginModal && !refs.loginModal.hidden) {
+      refs.loginCloseButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
         redirectHomeFromLoginModal();
-      }
-    });
+      });
+    }
     if (refs.loginForm) refs.loginForm.addEventListener("submit", handleLogin);
     if (refs.mfaEnrollForm) refs.mfaEnrollForm.addEventListener("submit", handleEnroll);
     if (refs.mfaChallengeForm) refs.mfaChallengeForm.addEventListener("submit", handleChallenge);
