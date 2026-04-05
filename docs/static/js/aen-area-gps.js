@@ -26,6 +26,7 @@
     loginOpenButton: root.querySelector("[data-login-open-button]"),
     loginCloseButtons: root.querySelectorAll("[data-login-close]"),
     mfa: root.querySelector("[data-mfa-view]"),
+    privateTemplate: root.querySelector("[data-private-template]"),
     private: root.querySelector("[data-private-view]"),
     configAlert: root.querySelector("[data-config-alert]"),
     loginForm: root.querySelector("[data-login-form]"),
@@ -43,39 +44,39 @@
     mfaChallengeForm: root.querySelector("[data-mfa-challenge-form]"),
     mfaChallengeSubmit: root.querySelector("[data-mfa-challenge-submit]"),
     mfaFeedback: root.querySelector("[data-mfa-feedback]"),
-    companyName: root.querySelector("[data-company-name]"),
-    userSummary: root.querySelector("[data-user-summary]"),
-    roleChip: root.querySelector("[data-role-chip]"),
-    mfaChip: root.querySelector("[data-mfa-chip]"),
-    sessionChip: root.querySelector("[data-session-chip]"),
-    scopeSummary: root.querySelector("[data-scope-summary]"),
-    recordSummary: root.querySelector("[data-record-summary]"),
-    refreshButton: root.querySelector("[data-refresh-button]"),
-    logoutButton: root.querySelector("[data-logout-button]"),
-    retryButton: root.querySelector("[data-retry-button]"),
-    searchInput: root.querySelector("[data-search-input]"),
-    statusFilter: root.querySelector("[data-status-filter]"),
-    priorityFilter: root.querySelector("[data-priority-filter]"),
-    ownerFilter: root.querySelector("[data-owner-filter]"),
-    visibleCounter: root.querySelector("[data-visible-counter]"),
-    dashboardFeedback: root.querySelector("[data-dashboard-feedback]"),
-    loading: root.querySelector("[data-loading-state]"),
-    empty: root.querySelector("[data-empty-state]"),
-    tableWrap: root.querySelector("[data-table-wrap]"),
-    tableBody: root.querySelector("[data-demandas-body]"),
-    mobileList: root.querySelector("[data-mobile-list]"),
-    kpiVisible: root.querySelector("[data-kpi-visible]"),
-    kpiApprove: root.querySelector("[data-kpi-approve]"),
-    kpiStart: root.querySelector("[data-kpi-start]"),
-    kpiProgress: root.querySelector("[data-kpi-progress]"),
-    adminPanel: root.querySelector("[data-admin-panel]"),
-    adminForm: root.querySelector("[data-admin-form]"),
-    adminRecordSelect: root.querySelector("[data-admin-record-select]"),
-    adminSaveSubmit: root.querySelector("[data-admin-save-submit]"),
-    adminResetButton: root.querySelector("[data-admin-reset-button]"),
-    adminDeleteButton: root.querySelector("[data-admin-delete-button]"),
-    adminFeedback: root.querySelector("[data-admin-feedback]"),
-    adminActionsHead: root.querySelector("[data-admin-actions-head]")
+    companyName: null,
+    userSummary: null,
+    roleChip: null,
+    mfaChip: null,
+    sessionChip: null,
+    scopeSummary: null,
+    recordSummary: null,
+    refreshButton: null,
+    logoutButton: null,
+    retryButton: null,
+    searchInput: null,
+    statusFilter: null,
+    priorityFilter: null,
+    ownerFilter: null,
+    visibleCounter: null,
+    dashboardFeedback: null,
+    loading: null,
+    empty: null,
+    tableWrap: null,
+    tableBody: null,
+    mobileList: null,
+    kpiVisible: null,
+    kpiApprove: null,
+    kpiStart: null,
+    kpiProgress: null,
+    adminPanel: null,
+    adminForm: null,
+    adminRecordSelect: null,
+    adminSaveSubmit: null,
+    adminResetButton: null,
+    adminDeleteButton: null,
+    adminFeedback: null,
+    adminActionsHead: null
   };
 
   const state = {
@@ -121,6 +122,97 @@
     hide(refs.mfa, view !== VIEW.mfa);
     hide(refs.private, view !== VIEW.private);
     if (view !== VIEW.guest) closeLoginModal();
+  }
+
+  function refreshPrivateRefs() {
+    refs.companyName = root.querySelector("[data-company-name]");
+    refs.userSummary = root.querySelector("[data-user-summary]");
+    refs.roleChip = root.querySelector("[data-role-chip]");
+    refs.mfaChip = root.querySelector("[data-mfa-chip]");
+    refs.sessionChip = root.querySelector("[data-session-chip]");
+    refs.scopeSummary = root.querySelector("[data-scope-summary]");
+    refs.recordSummary = root.querySelector("[data-record-summary]");
+    refs.refreshButton = root.querySelector("[data-refresh-button]");
+    refs.logoutButton = root.querySelector("[data-logout-button]");
+    refs.retryButton = root.querySelector("[data-retry-button]");
+    refs.searchInput = root.querySelector("[data-search-input]");
+    refs.statusFilter = root.querySelector("[data-status-filter]");
+    refs.priorityFilter = root.querySelector("[data-priority-filter]");
+    refs.ownerFilter = root.querySelector("[data-owner-filter]");
+    refs.visibleCounter = root.querySelector("[data-visible-counter]");
+    refs.dashboardFeedback = root.querySelector("[data-dashboard-feedback]");
+    refs.loading = root.querySelector("[data-loading-state]");
+    refs.empty = root.querySelector("[data-empty-state]");
+    refs.tableWrap = root.querySelector("[data-table-wrap]");
+    refs.tableBody = root.querySelector("[data-demandas-body]");
+    refs.mobileList = root.querySelector("[data-mobile-list]");
+    refs.kpiVisible = root.querySelector("[data-kpi-visible]");
+    refs.kpiApprove = root.querySelector("[data-kpi-approve]");
+    refs.kpiStart = root.querySelector("[data-kpi-start]");
+    refs.kpiProgress = root.querySelector("[data-kpi-progress]");
+    refs.adminPanel = root.querySelector("[data-admin-panel]");
+    refs.adminForm = root.querySelector("[data-admin-form]");
+    refs.adminRecordSelect = root.querySelector("[data-admin-record-select]");
+    refs.adminSaveSubmit = root.querySelector("[data-admin-save-submit]");
+    refs.adminResetButton = root.querySelector("[data-admin-reset-button]");
+    refs.adminDeleteButton = root.querySelector("[data-admin-delete-button]");
+    refs.adminFeedback = root.querySelector("[data-admin-feedback]");
+    refs.adminActionsHead = root.querySelector("[data-admin-actions-head]");
+  }
+
+  function clearPrivateView() {
+    if (refs.private) {
+      refs.private.innerHTML = "";
+      delete refs.private.dataset.bound;
+      delete refs.private.dataset.rendered;
+      hide(refs.private, true);
+    }
+    refreshPrivateRefs();
+  }
+
+  function bindPrivateEvents() {
+    if (!refs.private || refs.private.dataset.bound === "true") return;
+    if (refs.logoutButton) refs.logoutButton.addEventListener("click", handleLogout);
+    if (refs.refreshButton) refs.refreshButton.addEventListener("click", loadDashboard);
+    if (refs.retryButton) refs.retryButton.addEventListener("click", loadDashboard);
+    if (refs.searchInput) refs.searchInput.addEventListener("input", function (event) {
+      state.filters.search = event.target.value || "";
+      applyFilters();
+    });
+    if (refs.statusFilter) refs.statusFilter.addEventListener("change", function (event) {
+      state.filters.status = event.target.value || "Todos";
+      applyFilters();
+    });
+    if (refs.priorityFilter) refs.priorityFilter.addEventListener("change", function (event) {
+      state.filters.priority = event.target.value || "Todas";
+      applyFilters();
+    });
+    if (refs.ownerFilter) refs.ownerFilter.addEventListener("change", function (event) {
+      state.filters.owner = event.target.value || "Todos";
+      applyFilters();
+    });
+    if (refs.adminForm) refs.adminForm.addEventListener("submit", saveAdminDemand);
+    if (refs.adminResetButton) refs.adminResetButton.addEventListener("click", function () {
+      clearAdminForm("Formulário pronto para uma nova demanda.", "info");
+    });
+    if (refs.adminDeleteButton) refs.adminDeleteButton.addEventListener("click", function () {
+      const idField = refs.adminForm && refs.adminForm.elements.namedItem("id");
+      if (idField && idField.value) deleteAdminDemand(idField.value);
+    });
+    if (refs.adminRecordSelect) refs.adminRecordSelect.addEventListener("change", handleAdminRecordChange);
+    if (refs.tableBody) refs.tableBody.addEventListener("click", handleAdminActions);
+    if (refs.mobileList) refs.mobileList.addEventListener("click", handleAdminActions);
+    refs.private.dataset.bound = "true";
+  }
+
+  function ensurePrivateView() {
+    if (!refs.private || !refs.privateTemplate) return;
+    if (refs.private.dataset.rendered !== "true") {
+      refs.private.innerHTML = refs.privateTemplate.innerHTML;
+      refs.private.dataset.rendered = "true";
+    }
+    refreshPrivateRefs();
+    bindPrivateEvents();
   }
 
   function openLoginModal() {
@@ -198,17 +290,7 @@
     state.adminDemandas = [];
     state.visible = [];
     resetFilters();
-    if (refs.tableBody) refs.tableBody.innerHTML = "";
-    if (refs.mobileList) refs.mobileList.innerHTML = "";
-    if (refs.adminRecordSelect) refs.adminRecordSelect.innerHTML = '<option value="">Nova demanda</option>';
-    clearAdminForm();
-    setAdminFeedback("", "info");
-    hide(refs.tableWrap, true);
-    hide(refs.mobileList, true);
-    hide(refs.empty, true);
-    if (refs.visibleCounter) refs.visibleCounter.textContent = "0 registros visíveis";
-    if (refs.adminActionsHead) refs.adminActionsHead.hidden = true;
-    hide(refs.adminPanel, true);
+    clearPrivateView();
   }
 
   async function logAudit(eventType, eventStatus, details) {
@@ -549,6 +631,7 @@
 
   async function loadDashboard() {
     if (!state.session || !state.profile) return;
+    ensurePrivateView();
     setView(VIEW.private);
     setBusy(true);
     setDash("", "info");
@@ -878,36 +961,6 @@
     if (refs.loginForm) refs.loginForm.addEventListener("submit", handleLogin);
     if (refs.mfaEnrollForm) refs.mfaEnrollForm.addEventListener("submit", handleEnroll);
     if (refs.mfaChallengeForm) refs.mfaChallengeForm.addEventListener("submit", handleChallenge);
-    if (refs.logoutButton) refs.logoutButton.addEventListener("click", handleLogout);
-    if (refs.refreshButton) refs.refreshButton.addEventListener("click", loadDashboard);
-    if (refs.retryButton) refs.retryButton.addEventListener("click", loadDashboard);
-    if (refs.searchInput) refs.searchInput.addEventListener("input", function (event) {
-      state.filters.search = event.target.value || "";
-      applyFilters();
-    });
-    if (refs.statusFilter) refs.statusFilter.addEventListener("change", function (event) {
-      state.filters.status = event.target.value || "Todos";
-      applyFilters();
-    });
-    if (refs.priorityFilter) refs.priorityFilter.addEventListener("change", function (event) {
-      state.filters.priority = event.target.value || "Todas";
-      applyFilters();
-    });
-    if (refs.ownerFilter) refs.ownerFilter.addEventListener("change", function (event) {
-      state.filters.owner = event.target.value || "Todos";
-      applyFilters();
-    });
-    if (refs.adminForm) refs.adminForm.addEventListener("submit", saveAdminDemand);
-    if (refs.adminResetButton) refs.adminResetButton.addEventListener("click", function () {
-      clearAdminForm("Formulário pronto para uma nova demanda.", "info");
-    });
-    if (refs.adminDeleteButton) refs.adminDeleteButton.addEventListener("click", function () {
-      const idField = refs.adminForm && refs.adminForm.elements.namedItem("id");
-      if (idField && idField.value) deleteAdminDemand(idField.value);
-    });
-    if (refs.adminRecordSelect) refs.adminRecordSelect.addEventListener("change", handleAdminRecordChange);
-    if (refs.tableBody) refs.tableBody.addEventListener("click", handleAdminActions);
-    if (refs.mobileList) refs.mobileList.addEventListener("click", handleAdminActions);
   }
 
   async function init() {
