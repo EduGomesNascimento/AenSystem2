@@ -114,6 +114,10 @@
     const message = String((error && error.message) || "").toLowerCase();
     return message.indexOf(String(fnName || "").toLowerCase()) !== -1 && message.indexOf("function") !== -1;
   };
+  const profileFromRpc = (payload) => {
+    if (Array.isArray(payload)) return payload[0] || null;
+    return payload || null;
+  };
   const priorityLabel = (value) => ({ Media: "Média", Critica: "Crítica" }[value] || value || "Média");
   const shortText = (value) => (String(value || "").trim() || "Sem descrição").slice(0, 170).replace(/\s+/g, " ");
   const hour = (value) => Number(value || 0).toLocaleString("pt-BR", {
@@ -632,13 +636,15 @@
       console.warn(ensured.error);
     }
 
-    let profile = await state.client
-      .from("profiles")
-      .select("id, email, nome, empresa, role, ativo, mfa_required")
-      .eq("id", state.session.user.id)
-      .maybeSingle();
-    if (profile.error) throw profile.error;
-    state.profile = profile.data || null;
+    let profile = await state.client.rpc("get_my_profile");
+    if (profile.error) {
+      if (isMissingFunctionError(profile.error, "get_my_profile")) {
+        await resetSessionAndShowGuest("A configuração do acesso está desatualizada no Supabase. Reaplique o schema e tente novamente.", "error");
+        return false;
+      }
+      throw profile.error;
+    }
+    state.profile = profileFromRpc(profile.data);
 
     if (!state.profile) {
       const email = String((state.session.user && state.session.user.email) || "").trim().toLowerCase();
@@ -655,13 +661,9 @@
       if (bootstrap.error && bootstrap.error.code !== "23505") {
         console.warn(bootstrap.error);
       }
-      profile = await state.client
-        .from("profiles")
-        .select("id, email, nome, empresa, role, ativo, mfa_required")
-        .eq("id", state.session.user.id)
-        .maybeSingle();
+      profile = await state.client.rpc("get_my_profile");
       if (profile.error) throw profile.error;
-      state.profile = profile.data || null;
+      state.profile = profileFromRpc(profile.data);
     }
 
     if (!state.profile && !fromExplicitLogin) {

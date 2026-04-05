@@ -275,6 +275,42 @@ begin
 end;
 $$;
 
+create or replace function public.get_my_profile()
+returns table (
+  id uuid,
+  email text,
+  nome text,
+  empresa public.gp_company,
+  role public.gp_role,
+  ativo boolean,
+  mfa_required boolean
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null then
+    return;
+  end if;
+
+  perform public.ensure_my_profile();
+
+  return query
+  select
+    p.id,
+    p.email,
+    p.nome,
+    p.empresa,
+    p.role,
+    p.ativo,
+    p.mfa_required
+  from public.profiles as p
+  where p.id = auth.uid()
+  limit 1;
+end;
+$$;
+
 create or replace function public.log_audit_event(
   p_event_type text,
   p_event_status text default 'success',
@@ -318,9 +354,11 @@ grant select on public.audit_logs to authenticated;
 revoke execute on function public.log_audit_event(text, text, jsonb) from public, anon;
 revoke execute on function public.current_aal() from public, anon;
 revoke execute on function public.ensure_my_profile() from public, anon;
+revoke execute on function public.get_my_profile() from public, anon;
 grant execute on function public.log_audit_event(text, text, jsonb) to authenticated;
 grant execute on function public.current_aal() to authenticated;
 grant execute on function public.ensure_my_profile() to authenticated;
+grant execute on function public.get_my_profile() to authenticated;
 
 drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"
