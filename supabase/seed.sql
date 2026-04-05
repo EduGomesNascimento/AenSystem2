@@ -35,7 +35,7 @@ set nome = 'Administrador AEN SYSTEMS',
     empresa = null,
     role = 'admin',
     ativo = true,
-    mfa_required = true
+    mfa_required = false
 where email = 'aensistemas@gmail.com';
 
 insert into public.demandas (
