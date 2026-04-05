@@ -24,7 +24,7 @@
     guest: root.querySelector("[data-guest-view]"),
     loginModal: root.querySelector("[data-login-modal]"),
     loginOpenButton: root.querySelector("[data-login-open-button]"),
-    loginCloseButtons: root.querySelectorAll("[data-login-close]"),
+    loginCloseButton: root.querySelector("[data-login-close-button]"),
     mfa: root.querySelector("[data-mfa-view]"),
     privateTemplate: root.querySelector("[data-private-template]"),
     private: root.querySelector("[data-private-view]"),
@@ -963,11 +963,9 @@
 
   function bind() {
     if (refs.loginOpenButton) refs.loginOpenButton.addEventListener("click", openLoginModal);
-    if (refs.loginCloseButtons && refs.loginCloseButtons.length) {
-      refs.loginCloseButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-          closeLoginModal({ redirectHome: !state.session });
-        });
+    if (refs.loginCloseButton) {
+      refs.loginCloseButton.addEventListener("click", function () {
+        closeLoginModal({ redirectHome: !state.session });
       });
     }
     document.addEventListener("keydown", function (event) {
