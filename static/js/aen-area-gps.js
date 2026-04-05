@@ -224,9 +224,9 @@
 
   function closeLoginModal(options) {
     const settings = options || {};
-    const redirectHome = Boolean(settings.redirectHome);
+    const onDone = typeof settings.onDone === "function" ? settings.onDone : null;
     if (!refs.loginModal || refs.loginModal.hidden) {
-      if (redirectHome) window.location.href = "/";
+      if (onDone) onDone();
       return;
     }
     if (refs.loginModal.dataset.closing === "true") return;
@@ -236,8 +236,16 @@
       refs.loginModal.classList.remove("is-closing");
       refs.loginModal.dataset.closing = "false";
       hide(refs.loginModal, true);
-      if (redirectHome) window.location.href = "/";
+      if (onDone) onDone();
     }, 320);
+  }
+
+  function redirectHomeFromLoginModal() {
+    closeLoginModal({
+      onDone: function () {
+        window.location.assign("/");
+      }
+    });
   }
 
   function setBusy(yes) {
@@ -964,13 +972,11 @@
   function bind() {
     if (refs.loginOpenButton) refs.loginOpenButton.addEventListener("click", openLoginModal);
     if (refs.loginCloseButton) {
-      refs.loginCloseButton.addEventListener("click", function () {
-        closeLoginModal({ redirectHome: !state.session });
-      });
+      refs.loginCloseButton.addEventListener("click", redirectHomeFromLoginModal);
     }
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && refs.loginModal && !refs.loginModal.hidden) {
-        closeLoginModal({ redirectHome: !state.session });
+        redirectHomeFromLoginModal();
       }
     });
     if (refs.loginForm) refs.loginForm.addEventListener("submit", handleLogin);
