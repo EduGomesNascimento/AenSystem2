@@ -14,6 +14,7 @@ PAGES = {
     "sobre/index.html": ("aen_about.html", "/sobre"),
     "contato/index.html": ("aen_contact.html", "/contato"),
     "duvidas/index.html": ("aen_duvidas.html", "/duvidas"),
+    "area-gps/index.html": ("aen_area_gps.html", "/area-gps"),
 }
 
 
@@ -26,8 +27,22 @@ def url_for(endpoint, **values):
         "aen_about": "/sobre",
         "aen_contact": "/contato",
         "aen_faq": "/duvidas",
+        "aen_gp_area": "/area-gps",
     }
     return routes.get(endpoint, "/")
+
+
+def write_supabase_config(target: Path) -> None:
+    url = os.environ.get("AEN_SUPABASE_URL", "").strip()
+    anon_key = os.environ.get("AEN_SUPABASE_ANON_KEY", "").strip()
+    target.write_text(
+        "window.AEN_SUPABASE_CONFIG = Object.freeze({\n"
+        f"  url: {url!r},\n"
+        f"  anonKey: {anon_key!r},\n"
+        "  storageKey: 'aensystems-gp-auth'\n"
+        "});\n",
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":
@@ -51,6 +66,7 @@ if __name__ == "__main__":
         target.write_text(html, encoding="utf-8")
 
     shutil.copytree(STATIC, DIST / "static")
+    write_supabase_config(DIST / "static" / "js" / "aen-supabase-config.js")
     # Favicons at site root for browser tab
     favicon_ico = ROOT / "static" / "favicon.ico"
     favicon_32 = ROOT / "static" / "favicon-32.png"

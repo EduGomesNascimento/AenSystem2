@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AEN SYSTEMS | Área das GPs</title>
+  <meta name="description" content="Acompanhe demandas e orçamentos em andamento com acesso privado, segurança reforçada e segregação por empresa.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="/favicon.ico?v=2">
+  <link rel="shortcut icon" href="/favicon.ico?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=2">
+  <link rel="apple-touch-icon" href="/static/aensystems/logo-aen.png?v=2">
+  <link rel="stylesheet" href="/static/css/aensystems.css">
+  
+</head>
+<body class="aen-page">
+  <div class="aen-shell">
+    <header class="aen-header">
+      <div class="aen-container aen-header-inner">
+        <a class="aen-brand" href="/" aria-label="AEN SYSTEMS">
+          <img src="/static/aensystems/logo-aen.png" alt="AEN SYSTEMS">
+          <div>
+            <span class="aen-brand-title">AEN SYSTEMS</span>
+            <span class="aen-brand-tagline">LESS OBSTACLES + MORE SOLUTIONS</span>
+          </div>
+        </a>
+        <nav class="aen-nav" aria-label="Navegação AEN SYSTEMS">
+          <a href="/">Home</a>
+          <a href="/sobre">Sobre &amp; Serviços</a>
+          <a href="/duvidas">Dúvidas</a>
+          <a href="/contato">Contato</a>
+          <a class="aen-nav-highlight" href="/area-gps">Área das GPs</a>
+        </nav>
+        <div class="aen-theme-toggle">
+          <span class="aen-theme-label">Tema escuro</span>
+          <label class="aen-switch">
+            <input type="checkbox" id="aen-theme-switch" aria-label="Alternar tema escuro">
+            <span class="aen-slider" aria-hidden="true"></span>
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      
+<section class="aen-section aen-container aen-gp-hero aen-fade-up">
+  <div class="aen-gp-hero-copy">
+    <span class="aen-tag">Acesso privado corporativo</span>
+    <h1>Área das GPs</h1>
+    <p>Ambiente reservado para acompanhamento de demandas e orçamentos em andamento. O acesso é segregado por empresa e, para consultores, protegido com MFA por aplicativo autenticador.</p>
+    <div class="aen-feature-tags aen-stagger">
+      <span>Empresas: INTELECTA e PRODALY</span>
+      <span>Perfis: gp, consultor e admin</span>
+      <span>Supabase Auth com MFA por TOTP</span>
+      <span>RLS como proteção principal</span>
+    </div>
+  </div>
+  <aside class="aen-gp-summary-card">
+    <strong>Diretrizes desta área</strong>
+    <ul class="aen-list">
+      <li>Sem cadastro público: usuários são criados manualmente pelo administrador.</li>
+      <li>Somente status Aprovar, Iniciar e Desenvolvimento entram na visualização.</li>
+      <li>Consultores precisam concluir MFA para liberar a sessão.</li>
+      <li>O front-end nunca substitui as regras de autorização do banco.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="aen-section aen-container">
+  <div class="aen-gp-app" data-gp-app>
+    <div class="aen-gp-alert is-warning" data-config-alert hidden>
+      A integração com o Supabase ainda não foi configurada neste ambiente. Defina <code>AEN_SUPABASE_URL</code> e <code>AEN_SUPABASE_ANON_KEY</code> no build ou ajuste <code>static/js/aen-supabase-config.js</code>.
+    </div>
+
+    <div class="aen-gp-state aen-gp-boot" data-boot-state>
+      <div class="aen-gp-spinner" aria-hidden="true"></div>
+      <strong>Validando sessão e regras de acesso...</strong>
+      <p class="aen-muted">Aguarde enquanto conferimos autenticação, perfil e MFA.</p>
+    </div>
+
+    <div class="aen-gp-auth-grid" data-guest-view hidden>
+      <article class="aen-card aen-gp-panel">
+        <div class="aen-gp-panel-head">
+          <div>
+            <span class="aen-gp-eyebrow">Login</span>
+            <h2>Entrar na Área das GPs</h2>
+          </div>
+          <span class="aen-gp-lock" aria-hidden="true">Acesso</span>
+        </div>
+
+        <p class="aen-muted">Use o acesso corporativo criado pela AEN SYSTEMS. Esta área não possui auto cadastro e o conteúdo é liberado somente após autenticação válida.</p>
+
+        <form class="aen-form aen-gp-login-form" data-login-form novalidate>
+          <div>
+            <label for="gp-email">E-mail</label>
+            <input id="gp-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="nome@empresa.com.br">
+          </div>
+          <div>
+            <label for="gp-password">Senha</label>
+            <input id="gp-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha">
+          </div>
+          <button class="aen-btn primary" type="submit" data-login-submit>Entrar</button>
+        </form>
+
+        <div class="aen-gp-inline-state" data-login-feedback aria-live="polite"></div>
+      </article>
+
+      <article class="aen-card aen-gp-panel aen-gp-panel-muted">
+        <span class="aen-gp-eyebrow">Segurança</span>
+        <h2>Como o acesso é protegido</h2>
+        <div class="aen-gp-checklist">
+          <div>
+            <strong>Fonte oficial</strong>
+            <p class="aen-muted">Todos os dados vêm do banco Supabase. O navegador não acessa planilhas locais.</p>
+          </div>
+          <div>
+            <strong>Isolamento por empresa</strong>
+            <p class="aen-muted">Usuários de INTELECTA veem somente INTELECTA. Usuários de PRODALY veem somente PRODALY.</p>
+          </div>
+          <div>
+            <strong>MFA para consultores</strong>
+            <p class="aen-muted">Contas com papel consultor exigem autenticação adicional por aplicativo autenticador.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="aen-gp-mfa-grid" data-mfa-view hidden>
+      <article class="aen-card aen-gp-panel">
+        <div class="aen-gp-panel-head">
+          <div>
+            <span class="aen-gp-eyebrow">MFA obrigatório</span>
+            <h2 data-mfa-title>Confirmar autenticação adicional</h2>
+          </div>
+          <span class="aen-gp-lock" aria-hidden="true">MFA</span>
+        </div>
+
+        <p class="aen-muted" data-mfa-description>Seu perfil exige autenticação adicional antes de liberar a área privada.</p>
+
+        <div class="aen-gp-mfa-step" data-mfa-enroll-panel hidden>
+          <div class="aen-gp-security-card">
+            <strong>1. Cadastre o autenticador</strong>
+            <p class="aen-muted">Escaneie o QR Code em um aplicativo como Google Authenticator, Microsoft Authenticator ou 1Password.</p>
+          </div>
+
+          <div class="aen-gp-qr-wrap">
+            <img alt="QR Code do MFA" data-mfa-qr-image hidden>
+            <div class="aen-gp-qr-fallback" data-mfa-qr-fallback>QR Code não disponível.</div>
+          </div>
+
+          <div class="aen-gp-secret-box">
+            <span class="aen-gp-secret-label">Segredo manual</span>
+            <code data-mfa-secret>---</code>
+            <small class="aen-muted">Use este segredo apenas se o aplicativo não conseguir escanear o QR Code.</small>
+          </div>
+
+          <form class="aen-form" data-mfa-enroll-form novalidate>
+            <div>
+              <label for="gp-mfa-enroll-code">Código de 6 dígitos</label>
+              <input id="gp-mfa-enroll-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required>
+            </div>
+            <button class="aen-btn primary" type="submit" data-mfa-enroll-submit>Ativar MFA</button>
+          </form>
+        </div>
+
+        <div class="aen-gp-mfa-step" data-mfa-challenge-panel hidden>
+          <div class="aen-gp-security-card">
+            <strong>Autenticação adicional pendente</strong>
+            <p class="aen-muted">Seu perfil consultor já possui um fator verificado. Informe o código atual do aplicativo autenticador para concluir o login.</p>
+          </div>
+
+          <form class="aen-form" data-mfa-challenge-form novalidate>
+            <div>
+              <label for="gp-mfa-code">Código do autenticador</label>
+              <input id="gp-mfa-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required>
+            </div>
+            <button class="aen-btn primary" type="submit" data-mfa-challenge-submit>Validar código</button>
+          </form>
+        </div>
+
+        <div class="aen-gp-inline-state" data-mfa-feedback aria-live="polite"></div>
+      </article>
+
+      <article class="aen-card aen-gp-panel aen-gp-panel-muted">
+        <span class="aen-gp-eyebrow">Contexto</span>
+        <h2>Por que essa etapa existe</h2>
+        <div class="aen-gp-checklist">
+          <div>
+            <strong>Proteção sensível</strong>
+            <p class="aen-muted">Consultores normalmente acessam mais contexto operacional e precisam de uma camada extra além de senha.</p>
+          </div>
+          <div>
+            <strong>JWT reforçado</strong>
+            <p class="aen-muted">Após validar o código, a sessão sobe para <code>aal2</code>, o que também é conferido nas policies do banco.</p>
+          </div>
+          <div>
+            <strong>Sem segredo no front-end</strong>
+            <p class="aen-muted">A aplicação usa apenas a chave pública do Supabase. A autorização continua centralizada no banco e no serviço de autenticação.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="aen-gp-dashboard" data-private-view hidden>
+      <section class="aen-card aen-gp-dashboard-head">
+        <div>
+          <span class="aen-gp-eyebrow">Sessão autenticada</span>
+          <h2 data-company-name>Carregando empresa...</h2>
+          <p class="aen-muted" data-user-summary>Validando sessão.</p>
+        </div>
+        <div class="aen-gp-dashboard-actions">
+          <button class="aen-btn" type="button" data-refresh-button>Atualizar</button>
+          <button class="aen-btn primary" type="button" data-logout-button>Sair</button>
+        </div>
+      </section>
+
+      <section class="aen-gp-meta-grid">
+        <article class="aen-card aen-gp-security-card">
+          <span class="aen-gp-eyebrow">Perfil</span>
+          <div class="aen-gp-badges">
+            <span class="aen-gp-chip" data-role-chip>Papel</span>
+            <span class="aen-gp-chip" data-mfa-chip>MFA</span>
+            <span class="aen-gp-chip" data-session-chip>Sessão</span>
+          </div>
+          <p class="aen-muted">Os dados exibidos abaixo já passaram pelas regras de autorização do Supabase e pelas policies de RLS.</p>
+        </article>
+
+        <article class="aen-card aen-gp-security-card">
+          <span class="aen-gp-eyebrow">Escopo atual</span>
+          <strong data-scope-summary>Carregando escopo...</strong>
+          <p class="aen-muted" data-record-summary>Separação por empresa, papel e status em andamento.</p>
+        </article>
+      </section>
+
+      <section class="aen-gp-kpis">
+        <article class="aen-card">
+          <span class="aen-gp-kpi-label">Total visível</span>
+          <strong class="aen-gp-kpi-value" data-kpi-visible>0</strong>
+          <span class="aen-muted">Registros após aplicar os filtros atuais.</span>
+        </article>
+        <article class="aen-card">
+          <span class="aen-gp-kpi-label">Aprovar</span>
+          <strong class="aen-gp-kpi-value" data-kpi-approve>0</strong>
+          <span class="aen-muted">Itens aguardando validação.</span>
+        </article>
+        <article class="aen-card">
+          <span class="aen-gp-kpi-label">Iniciar</span>
+          <strong class="aen-gp-kpi-value" data-kpi-start>0</strong>
+          <span class="aen-muted">Itens prontos para início.</span>
+        </article>
+        <article class="aen-card">
+          <span class="aen-gp-kpi-label">Desenvolvimento</span>
+          <strong class="aen-gp-kpi-value" data-kpi-progress>0</strong>
+          <span class="aen-muted">Itens em execução.</span>
+        </article>
+      </section>
+
+      <section class="aen-card aen-gp-toolbar-card">
+        <div class="aen-gp-toolbar">
+          <div>
+            <label for="gp-search">Busca textual</label>
+            <input id="gp-search" type="search" placeholder="Cliente, título, empresa, responsável ou descrição" data-search-input>
+          </div>
+          <div>
+            <label for="gp-status-filter">Status</label>
+            <select id="gp-status-filter" data-status-filter>
+              <option value="Todos">Todos</option>
+              <option value="Aprovar">Aprovar</option>
+              <option value="Iniciar">Iniciar</option>
+              <option value="Desenvolvimento">Desenvolvimento</option>
+            </select>
+          </div>
+          <div>
+            <label for="gp-priority-filter">Prioridade</label>
+            <select id="gp-priority-filter" data-priority-filter>
+              <option value="Todas">Todas</option>
+            </select>
+          </div>
+          <div>
+            <label for="gp-owner-filter">Responsável</label>
+            <select id="gp-owner-filter" data-owner-filter>
+              <option value="Todos">Todos</option>
+            </select>
+          </div>
+        </div>
+        <div class="aen-gp-toolbar-footer">
+          <p class="aen-muted">Ordenação fixa por atualização mais recente. O filtro do front-end é apenas apoio visual: a segurança continua no banco.</p>
+          <strong data-visible-counter>0 registros visíveis</strong>
+        </div>
+      </section>
+
+      <div class="aen-gp-alert" data-dashboard-feedback hidden aria-live="polite"></div>
+
+      <div class="aen-gp-state" data-loading-state hidden>
+        <div class="aen-gp-spinner" aria-hidden="true"></div>
+        <strong>Carregando demandas autorizadas...</strong>
+        <p class="aen-muted">Aguarde enquanto buscamos os registros válidos para o seu perfil.</p>
+      </div>
+
+      <div class="aen-gp-state" data-empty-state hidden>
+        <strong>Nenhum registro encontrado.</strong>
+        <p class="aen-muted">Ajuste os filtros ou aguarde novas movimentações da sua empresa.</p>
+        <button class="aen-btn" type="button" data-retry-button>Tentar novamente</button>
+      </div>
+
+      <div class="aen-gp-table-wrap" data-table-wrap hidden>
+        <table class="aen-gp-table">
+          <thead>
+            <tr>
+              <th scope="col">Empresa</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Título</th>
+              <th scope="col">Status</th>
+              <th scope="col">Prioridade</th>
+              <th scope="col">Responsável</th>
+              <th scope="col">Horas</th>
+              <th scope="col">Atualização</th>
+            </tr>
+          </thead>
+          <tbody data-demandas-body></tbody>
+        </table>
+      </div>
+
+      <div class="aen-gp-mobile-list" data-mobile-list hidden></div>
+    </div>
+  </div>
+</section>
+
+    </main>
+
+    <footer class="aen-footer">
+      <div class="aen-container aen-footer-inner">
+        <small>AEN SYSTEMS · AEN SISTEMAS E CONSULTORIA LTDA · CNPJ 40.330.983/0001-49</small>
+        <div class="aen-footer-social">
+          <span>Encontre-nos</span>
+          <div class="aen-socials">
+            <a class="aen-social" href="https://br.linkedin.com/in/aenportao/" target="_blank" rel="noopener" aria-label="LinkedIn AEN SYSTEMS">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm-2 7h4v10h-4v-10Zm7 0h3.8v1.4h.05c.53-.95 1.82-1.95 3.75-1.95 4.02 0 4.76 2.64 4.76 6.07v4.48h-4v-3.97c0-.95-.02-2.17-1.33-2.17-1.33 0-1.53 1.04-1.53 2.1v4.04h-4v-10Z"/>
+              </svg>
+            </a>
+            <a class="aen-social" href="https://www.instagram.com/aensistemas/" target="_blank" rel="noopener" aria-label="Instagram AEN SYSTEMS">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 7.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4Zm0 7.7a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0ZM20 8.6c-.05-1.1-.3-2.1-1.1-2.9-.8-.8-1.8-1.05-2.9-1.1-1.1-.06-4.3-.06-5.4 0-1.1.05-2.1.3-2.9 1.1-.8.8-1.05 1.8-1.1 2.9-.06 1.1-.06 4.3 0 5.4.05 1.1.3 2.1 1.1 2.9.8.8 1.8 1.05 2.9 1.1 1.1.06 4.3.06 5.4 0 1.1-.05 2.1-.3 2.9-1.1.8-.8 1.05-1.8 1.1-2.9.06-1.1.06-4.3 0-5.4ZM18 17.3c-.24.6-.7 1.06-1.3 1.3-.9.36-3.1.28-4.7.28s-3.8.08-4.7-.28c-.6-.24-1.06-.7-1.3-1.3-.36-.9-.28-3.1-.28-4.7s-.08-3.8.28-4.7c.24-.6.7-1.06 1.3-1.3.9-.36 3.1-.28 4.7-.28s3.8-.08 4.7.28c.6.24 1.06.7 1.3 1.3.36.9.28 3.1.28 4.7s.08 3.8-.28 4.7Z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <a class="aen-credit" href="mailto:egnportao@gmail.com">Criado por: egnportao@gmail.com</a>
+  <script src="/static/js/aensystems.js"></script>
+  
+<script src="/static/js/aen-supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/static/js/aen-area-gps.js"></script>
+
+</body>
+</html>
