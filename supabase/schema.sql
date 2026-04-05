@@ -217,6 +217,29 @@ as $$
   select coalesce(auth.jwt() ->> 'aal', 'aal1')
 $$;
 
+create or replace function public.ensure_my_profile()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_email text;
+begin
+  if auth.uid() is null then
+    return;
+  end if;
+
+  v_email := nullif(auth.jwt() ->> 'email', '');
+
+  insert into public.profiles (id, email)
+  values (auth.uid(), v_email)
+  on conflict (id) do update
+    set email = coalesce(excluded.email, public.profiles.email),
+        updated_at = timezone('utc', now());
+end;
+$$;
+
 create or replace function public.log_audit_event(
   p_event_type text,
   p_event_status text default 'success',
@@ -258,8 +281,10 @@ grant insert, update, delete on public.demandas to authenticated;
 grant select on public.audit_logs to authenticated;
 revoke execute on function public.log_audit_event(text, text, jsonb) from public, anon;
 revoke execute on function public.current_aal() from public, anon;
+revoke execute on function public.ensure_my_profile() from public, anon;
 grant execute on function public.log_audit_event(text, text, jsonb) to authenticated;
 grant execute on function public.current_aal() to authenticated;
+grant execute on function public.ensure_my_profile() to authenticated;
 
 drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"

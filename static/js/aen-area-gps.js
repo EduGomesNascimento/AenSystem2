@@ -615,6 +615,9 @@
   }
 
   async function enforceAccess() {
+    const ensured = await state.client.rpc("ensure_my_profile");
+    if (ensured.error) throw ensured.error;
+
     const profile = await state.client
       .from("profiles")
       .select("id, email, nome, empresa, role, ativo, mfa_required")
