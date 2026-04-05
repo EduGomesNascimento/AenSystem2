@@ -6,12 +6,12 @@
   <title>{% block title %}AEN SYSTEMS{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}AEN SYSTEMS - consultoria e desenvolvimento para operações que não podem parar.{% endblock %}">
   <meta name="robots" content="{% block meta_robots %}index,follow{% endblock %}">
-  <link rel="icon" href="/favicon.ico?v=2">
-  <link rel="shortcut icon" href="/favicon.ico?v=2">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=2">
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='aensystems/logo-aen.png') }}?v=2">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/aensystems.css') }}?v=20260405-gpfix">
+  <link rel="icon" href="/favicon.ico?v={{ asset_version|default('dev', true) }}">
+  <link rel="shortcut icon" href="/favicon.ico?v={{ asset_version|default('dev', true) }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v={{ asset_version|default('dev', true) }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v={{ asset_version|default('dev', true) }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='aensystems/logo-aen.png') }}?v={{ asset_version|default('dev', true) }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/aensystems.css') }}?v={{ asset_version|default('dev', true) }}">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="aen-page">
@@ -67,8 +67,11 @@
       </div>
     </footer>
   </div>
-  <a class="aen-credit" href="mailto:egnportao@gmail.com">Criado por: egnportao@gmail.com</a>
-  <script src="{{ url_for('static', filename='js/aensystems.js') }}?v=20260405-gpfix"></script>
+  <a class="aen-credit" href="mailto:egnportao@gmail.com" aria-label="Criado por egnportao@gmail.com, versão {{ site_version|default('dev', true) }}">
+    <span class="aen-credit-author">Criado por: egnportao@gmail.com</span>
+    <span class="aen-credit-version">Versão {{ site_version|default('dev', true) }}</span>
+  </a>
+  <script src="{{ url_for('static', filename='js/aensystems.js') }}?v={{ asset_version|default('dev', true) }}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>
