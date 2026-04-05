@@ -1198,6 +1198,10 @@
   align-items: flex-start;
 }
 
+.aen-gp-modal .aen-gp-lock {
+  display: none !important;
+}
+
 .aen-gp-modal .aen-form input,
 .aen-gp-modal .aen-form select,
 .aen-gp-modal .aen-form textarea {

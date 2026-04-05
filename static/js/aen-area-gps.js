@@ -1038,6 +1038,9 @@
   }
 
   function bind() {
+    root.querySelectorAll(".aen-gp-modal .aen-gp-lock").forEach(function (element) {
+      element.remove();
+    });
     if (refs.loginOpenButton) refs.loginOpenButton.addEventListener("click", openLoginModal);
     if (refs.loginCloseButton) {
       refs.loginCloseButton.addEventListener("click", function (event) {
