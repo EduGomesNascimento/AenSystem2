@@ -222,6 +222,10 @@
   }
 
   function closeLoginModal() {
+    if (!state.session) {
+      window.location.href = "/";
+      return;
+    }
     hide(refs.loginModal, true);
   }
 
