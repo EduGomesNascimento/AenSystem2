@@ -109,6 +109,10 @@
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
   const roleLabel = (value) => ({ gp: "GP", consultor: "Consultor", admin: "Admin" }[value] || "Sem papel");
+  const isMissingFunctionError = (error, fnName) => {
+    const message = String((error && error.message) || "").toLowerCase();
+    return message.indexOf(String(fnName || "").toLowerCase()) !== -1 && message.indexOf("function") !== -1;
+  };
   const priorityLabel = (value) => ({ Media: "Média", Critica: "Crítica" }[value] || value || "Média");
   const shortText = (value) => (String(value || "").trim() || "Sem descrição").slice(0, 170).replace(/\s+/g, " ");
   const hour = (value) => Number(value || 0).toLocaleString("pt-BR", {
@@ -616,7 +620,13 @@
 
   async function enforceAccess() {
     const ensured = await state.client.rpc("ensure_my_profile");
-    if (ensured.error) throw ensured.error;
+    if (ensured.error) {
+      if (isMissingFunctionError(ensured.error, "ensure_my_profile")) {
+        await resetSessionAndShowGuest("A configuração do acesso está desatualizada no Supabase. Reaplique o schema e tente novamente.", "error");
+        return false;
+      }
+      throw ensured.error;
+    }
 
     const profile = await state.client
       .from("profiles")

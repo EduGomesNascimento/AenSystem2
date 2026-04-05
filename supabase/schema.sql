@@ -230,13 +230,24 @@ begin
     return;
   end if;
 
-  v_email := nullif(auth.jwt() ->> 'email', '');
+  v_email := lower(nullif(auth.jwt() ->> 'email', ''));
 
   insert into public.profiles (id, email)
   values (auth.uid(), v_email)
   on conflict (id) do update
     set email = coalesce(excluded.email, public.profiles.email),
         updated_at = timezone('utc', now());
+
+  if v_email = 'aensistemas@gmail.com' then
+    update public.profiles
+    set nome = coalesce(nome, 'Administrador AEN SYSTEMS'),
+        empresa = null,
+        role = 'admin',
+        ativo = true,
+        mfa_required = false,
+        updated_at = timezone('utc', now())
+    where id = auth.uid();
+  end if;
 end;
 $$;
 

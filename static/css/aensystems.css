@@ -1193,19 +1193,9 @@
 }
 
 .aen-gp-modal .aen-gp-panel-head {
-  padding-right: 72px;
+  justify-content: flex-start;
+  padding-right: 52px;
   align-items: flex-start;
-}
-
-.aen-gp-modal .aen-gp-panel-head > :first-child {
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.aen-gp-modal .aen-gp-lock {
-  flex: 0 0 auto;
-  max-width: calc(100% - 72px);
-  margin-right: 4px;
 }
 
 .aen-gp-modal .aen-form input,
@@ -1867,11 +1857,7 @@
   }
 
   .aen-gp-modal .aen-gp-panel-head {
-    padding-right: 58px;
-  }
-
-  .aen-gp-modal .aen-gp-lock {
-    max-width: 100%;
+    padding-right: 48px;
   }
 
   .aen-gp-admin-grid,
