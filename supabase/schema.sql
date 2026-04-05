@@ -190,9 +190,9 @@ set search_path = public
 as $$
 begin
   insert into public.profiles (id, email)
-  values (new.id, new.email)
+  values (new.id, lower(new.email))
   on conflict (id) do update
-    set email = excluded.email,
+    set email = coalesce(excluded.email, public.profiles.email),
         updated_at = timezone('utc', now());
   return new;
 end;
@@ -204,9 +204,9 @@ after insert on auth.users
 for each row execute function public.handle_new_user();
 
 insert into public.profiles (id, email)
-select u.id, u.email from auth.users as u
+select u.id, lower(u.email) from auth.users as u
 on conflict (id) do update
-  set email = excluded.email,
+  set email = coalesce(excluded.email, public.profiles.email),
       updated_at = timezone('utc', now());
 
 create or replace function public.current_aal()
@@ -225,6 +225,7 @@ set search_path = public
 as $$
 declare
   v_email text;
+  v_existing_id uuid;
 begin
   if auth.uid() is null then
     return;
@@ -232,11 +233,34 @@ begin
 
   v_email := lower(nullif(auth.jwt() ->> 'email', ''));
 
-  insert into public.profiles (id, email)
-  values (auth.uid(), v_email)
-  on conflict (id) do update
-    set email = coalesce(excluded.email, public.profiles.email),
-        updated_at = timezone('utc', now());
+  if v_email is not null then
+    select p.id
+    into v_existing_id
+    from public.profiles as p
+    where lower(coalesce(p.email, '')) = v_email
+    order by p.updated_at desc, p.created_at desc
+    limit 1;
+  end if;
+
+  if exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+  ) then
+    update public.profiles
+    set email = coalesce(v_email, public.profiles.email),
+        updated_at = timezone('utc', now())
+    where id = auth.uid();
+  elsif v_existing_id is not null then
+    update public.profiles
+    set id = auth.uid(),
+        email = coalesce(v_email, public.profiles.email),
+        updated_at = timezone('utc', now())
+    where id = v_existing_id;
+  else
+    insert into public.profiles (id, email)
+    values (auth.uid(), v_email);
+  end if;
 
   if v_email = 'aensistemas@gmail.com' then
     update public.profiles
