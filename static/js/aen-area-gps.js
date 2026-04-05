@@ -217,16 +217,27 @@
 
   function openLoginModal() {
     hide(refs.loginModal, false);
+    refs.loginModal.classList.remove("is-closing");
     const emailInput = refs.loginForm ? refs.loginForm.querySelector('input[name="email"]') : null;
     if (emailInput) window.setTimeout(function () { emailInput.focus(); }, 0);
   }
 
-  function closeLoginModal() {
-    if (!state.session) {
-      window.location.href = "/";
+  function closeLoginModal(options) {
+    const settings = options || {};
+    const redirectHome = Boolean(settings.redirectHome);
+    if (!refs.loginModal || refs.loginModal.hidden) {
+      if (redirectHome) window.location.href = "/";
       return;
     }
-    hide(refs.loginModal, true);
+    if (refs.loginModal.dataset.closing === "true") return;
+    refs.loginModal.dataset.closing = "true";
+    refs.loginModal.classList.add("is-closing");
+    window.setTimeout(function () {
+      refs.loginModal.classList.remove("is-closing");
+      refs.loginModal.dataset.closing = "false";
+      hide(refs.loginModal, true);
+      if (redirectHome) window.location.href = "/";
+    }, 320);
   }
 
   function setBusy(yes) {
@@ -954,12 +965,14 @@
     if (refs.loginOpenButton) refs.loginOpenButton.addEventListener("click", openLoginModal);
     if (refs.loginCloseButtons && refs.loginCloseButtons.length) {
       refs.loginCloseButtons.forEach(function (button) {
-        button.addEventListener("click", closeLoginModal);
+        button.addEventListener("click", function () {
+          closeLoginModal({ redirectHome: !state.session });
+        });
       });
     }
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && refs.loginModal && !refs.loginModal.hidden) {
-        closeLoginModal();
+        closeLoginModal({ redirectHome: !state.session });
       }
     });
     if (refs.loginForm) refs.loginForm.addEventListener("submit", handleLogin);

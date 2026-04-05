@@ -1134,6 +1134,7 @@
   display: grid;
   place-items: center;
   padding: 24px;
+  perspective: 1500px;
 }
 
 .aen-gp-modal-shell:not([hidden]) {
@@ -1161,6 +1162,18 @@
   color: #122033;
   transform-origin: center top;
   animation: aen-gp-modal-in 0.22s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.aen-gp-modal-shell.is-closing {
+  pointer-events: none;
+}
+
+.aen-gp-modal-shell.is-closing .aen-gp-modal-backdrop {
+  animation: aen-gp-backdrop-out 0.28s ease-in forwards;
+}
+
+.aen-gp-modal-shell.is-closing .aen-gp-modal {
+  animation: aen-gp-modal-out 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .aen-gp-modal h2,
@@ -1444,6 +1457,28 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes aen-gp-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes aen-gp-modal-out {
+  from {
+    opacity: 1;
+    transform: rotateY(0deg) rotateZ(0deg) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: rotateY(90deg) rotateZ(10deg) scale(0.5);
+    filter: blur(18px);
   }
 }
 
