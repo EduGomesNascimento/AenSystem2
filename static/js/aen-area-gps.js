@@ -90,7 +90,8 @@
     mfa: { factorId: null, qrCode: "", secret: "", verified: [] },
     filters: { search: "", status: "Todos", priority: "Todas", owner: "Todos" },
     authBusy: false,
-    loginModalClosableAt: 0
+    loginModalClosableAt: 0,
+    syncInFlight: null
   };
 
   const hide = (el, yes) => el && (el.hidden = yes);
@@ -703,6 +704,16 @@
   }
 
   async function syncSession(opts) {
+    if (state.syncInFlight) return state.syncInFlight;
+    state.syncInFlight = syncSessionInternal(opts);
+    try {
+      return await state.syncInFlight;
+    } finally {
+      state.syncInFlight = null;
+    }
+  }
+
+  async function syncSessionInternal(opts) {
     const options = opts || {};
     if (!options.silent) setBoot("Validando sessão e regras de acesso...");
     const session = await state.client.auth.getSession();
@@ -733,6 +744,7 @@
 
   async function handleLogin(event) {
     event.preventDefault();
+    if (state.authBusy) return;
     const data = new FormData(refs.loginForm);
     const email = String(data.get("email") || "").trim();
     const password = String(data.get("password") || "");
@@ -742,6 +754,10 @@
     setBusy(true);
     setInline(refs.loginFeedback, "Validando acesso...", "info");
     try {
+      if (state.session) {
+        await syncSession({ silent: true });
+        return;
+      }
       const result = await state.client.auth.signInWithPassword({ email: email, password: password });
       if (result.error) throw result.error;
       refs.loginForm.reset();
@@ -975,7 +991,10 @@
             hadSession ? "warning" : "info"
           );
         }
-        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "MFA_CHALLENGE_VERIFIED") {
+        if (
+          !state.authBusy
+          && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "MFA_CHALLENGE_VERIFIED")
+        ) {
           syncSession({ silent: true });
         }
       }, 0);
