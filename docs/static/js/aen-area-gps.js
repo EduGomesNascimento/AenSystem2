@@ -985,10 +985,13 @@
       const hadSession = Boolean(state.session);
       state.session = session;
       window.setTimeout(function () {
+        if (event === "INITIAL_SESSION") {
+          return;
+        }
         if (!session) {
           return showGuest(
-            hadSession && event === "SIGNED_OUT" ? "Sua sessão foi encerrada ou expirou. Faça login novamente." : "",
-            hadSession ? "warning" : "info"
+            hadSession && event === "SIGNED_OUT" ? "Sua sessão foi encerrada. Faça login novamente." : "",
+            hadSession && event === "SIGNED_OUT" ? "warning" : "info"
           );
         }
         if (
