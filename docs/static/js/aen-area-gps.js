@@ -19,6 +19,7 @@
   const VIEW = { boot: "boot", guest: "guest", mfa: "mfa", private: "private" };
 
   const refs = {
+    publicShell: document.querySelector("[data-gp-public-shell]"),
     boot: root.querySelector("[data-boot-state]"),
     guest: root.querySelector("[data-guest-view]"),
     mfa: root.querySelector("[data-mfa-view]"),
@@ -107,6 +108,7 @@
     : new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(value));
 
   function setView(view) {
+    hide(refs.publicShell, view !== VIEW.guest);
     hide(refs.boot, view !== VIEW.boot);
     hide(refs.guest, view !== VIEW.guest);
     hide(refs.mfa, view !== VIEW.mfa);
@@ -259,7 +261,8 @@
     const owners = [];
     state.demandas.forEach(function (item) {
       if (item.prioridade && priorities.indexOf(item.prioridade) === -1) priorities.push(item.prioridade);
-      if (item.responsavel && owners.indexOf(item.responsavel) === -1) owners.push(item.responsavel);
+      const owner = item.gerente_projetos || item.responsavel;
+      if (owner && owners.indexOf(owner) === -1) owners.push(owner);
     });
     if (refs.priorityFilter) refs.priorityFilter.innerHTML = optionList(priorities, "Todas", priorityLabel);
     if (refs.ownerFilter) refs.ownerFilter.innerHTML = optionList(owners, "Todos");
@@ -308,14 +311,19 @@
     state.visible = state.demandas.filter(function (item) {
       const okStatus = state.filters.status === "Todos" || item.status === state.filters.status;
       const okPriority = state.filters.priority === "Todas" || item.prioridade === state.filters.priority;
-      const okOwner = state.filters.owner === "Todos" || item.responsavel === state.filters.owner;
+      const ownerValue = item.gerente_projetos || item.responsavel;
+      const okOwner = state.filters.owner === "Todos" || ownerValue === state.filters.owner;
       if (!okStatus || !okPriority || !okOwner) return false;
       if (!search) return true;
       const text = [
         item.empresa,
+        item.gerente_projetos,
+        item.consultor,
         item.cliente,
         item.titulo,
         item.descricao,
+        item.documento_lrc_email,
+        item.os_item_ticket,
         item.responsavel,
         item.status,
         priorityLabel(item.prioridade)
@@ -330,8 +338,13 @@
         return (
           "<tr>"
           + '<td data-label="Empresa">' + esc(item.empresa || "-") + "</td>"
+          + '<td data-label="Gerente de Projetos">' + esc(item.gerente_projetos || "-") + "</td>"
+          + '<td data-label="Consultor">' + esc(item.consultor || "-") + "</td>"
           + '<td data-label="Cliente">' + esc(item.cliente || "-") + "</td>"
-          + '<td data-label="Título"><div class="aen-gp-title-cell"><strong>' + esc(item.titulo || "Sem título") + '</strong><span class="aen-muted">' + esc(shortText(item.descricao)) + "</span></div></td>"
+          + '<td data-label="Título"><div class="aen-gp-title-cell"><strong>' + esc(item.titulo || "Sem título") + "</strong></div></td>"
+          + '<td data-label="Descrição">' + esc(shortText(item.descricao)) + "</td>"
+          + '<td data-label="Documento LRC/E-mail">' + esc(item.documento_lrc_email || "-") + "</td>"
+          + '<td data-label="OS/Item/Ticket">' + esc(item.os_item_ticket || "-") + "</td>"
           + '<td data-label="Status"><span class="aen-gp-status-badge ' + statusClass + '">' + esc(item.status) + "</span></td>"
           + '<td data-label="Prioridade"><span class="aen-gp-priority-badge ' + priorityClass + '">' + esc(priorityLabel(item.prioridade)) + "</span></td>"
           + '<td data-label="Responsável">' + esc(item.responsavel || "-") + "</td>"
@@ -352,7 +365,11 @@
           + '<div class="aen-gp-mobile-card-head"><strong>' + esc(item.titulo || "Sem título") + '</strong><span class="aen-gp-chip">' + esc(item.empresa || "-") + "</span></div>"
           + '<p class="aen-muted">' + esc(shortText(item.descricao)) + "</p>"
           + '<div class="aen-gp-mobile-meta">'
+          + "<span><small>Gerente de Projetos</small>" + esc(item.gerente_projetos || "-") + "</span>"
+          + "<span><small>Consultor</small>" + esc(item.consultor || "-") + "</span>"
           + "<span><small>Cliente</small>" + esc(item.cliente || "-") + "</span>"
+          + "<span><small>Documento LRC/E-mail</small>" + esc(item.documento_lrc_email || "-") + "</span>"
+          + "<span><small>OS/Item/Ticket</small>" + esc(item.os_item_ticket || "-") + "</span>"
           + "<span><small>Responsável</small>" + esc(item.responsavel || "-") + "</span>"
           + '<span><small>Status</small><span class="aen-gp-status-badge ' + statusClass + '">' + esc(item.status) + "</span></span>"
           + '<span><small>Prioridade</small><span class="aen-gp-priority-badge ' + priorityClass + '">' + esc(priorityLabel(item.prioridade)) + "</span></span>"
@@ -424,8 +441,12 @@
     refs.adminForm.elements.namedItem("referencia_externa").value = item.referencia_externa || "";
     refs.adminForm.elements.namedItem("empresa").value = item.empresa || "";
     refs.adminForm.elements.namedItem("cliente").value = item.cliente || "";
+    refs.adminForm.elements.namedItem("gerente_projetos").value = item.gerente_projetos || "";
+    refs.adminForm.elements.namedItem("consultor").value = item.consultor || "";
     refs.adminForm.elements.namedItem("titulo").value = item.titulo || "";
     refs.adminForm.elements.namedItem("descricao").value = item.descricao || "";
+    refs.adminForm.elements.namedItem("documento_lrc_email").value = item.documento_lrc_email || "";
+    refs.adminForm.elements.namedItem("os_item_ticket").value = item.os_item_ticket || "";
     refs.adminForm.elements.namedItem("status").value = item.status || "Aprovar";
     refs.adminForm.elements.namedItem("prioridade").value = item.prioridade || "Media";
     refs.adminForm.elements.namedItem("responsavel").value = item.responsavel || "";
@@ -500,7 +521,7 @@
     if (!isAdmin()) return;
     const result = await state.client
       .from("demandas")
-      .select("id, referencia_externa, empresa, cliente, titulo, descricao, status, responsavel, prioridade, horas_previstas, horas_gastas, data_criacao, data_atualizacao")
+      .select("id, referencia_externa, empresa, cliente, gerente_projetos, consultor, titulo, descricao, documento_lrc_email, os_item_ticket, status, responsavel, prioridade, horas_previstas, horas_gastas, data_criacao, data_atualizacao")
       .order("data_atualizacao", { ascending: false });
     if (result.error) throw result.error;
     state.adminDemandas = result.data || [];
@@ -516,7 +537,7 @@
     try {
       const result = await state.client
         .from("demandas")
-        .select("id, referencia_externa, empresa, cliente, titulo, descricao, status, responsavel, prioridade, horas_previstas, horas_gastas, data_criacao, data_atualizacao")
+        .select("id, referencia_externa, empresa, cliente, gerente_projetos, consultor, titulo, descricao, documento_lrc_email, os_item_ticket, status, responsavel, prioridade, horas_previstas, horas_gastas, data_criacao, data_atualizacao")
         .in("status", ALLOWED_STATUSES)
         .order("data_atualizacao", { ascending: false });
       if (result.error) throw result.error;
@@ -549,6 +570,12 @@
     state.session = session.data ? session.data.session : null;
     if (!state.session) {
       showGuest(options.message || "", options.tone || "info");
+      return;
+    }
+    const user = await state.client.auth.getUser();
+    if (user.error || !user.data || !user.data.user) {
+      await state.client.auth.signOut();
+      showGuest("Sua sessão expirou ou não pôde ser validada. Faça login novamente.", "warning");
       return;
     }
     if (await enforceAccess()) await loadDashboard();
@@ -670,8 +697,12 @@
       referencia_externa: String(form.get("referencia_externa") || "").trim(),
       empresa: String(form.get("empresa") || "").trim(),
       cliente: String(form.get("cliente") || "").trim(),
+      gerente_projetos: String(form.get("gerente_projetos") || "").trim(),
+      consultor: String(form.get("consultor") || "").trim(),
       titulo: String(form.get("titulo") || "").trim(),
       descricao: String(form.get("descricao") || "").trim(),
+      documento_lrc_email: String(form.get("documento_lrc_email") || "").trim(),
+      os_item_ticket: String(form.get("os_item_ticket") || "").trim(),
       status: String(form.get("status") || "").trim(),
       responsavel: String(form.get("responsavel") || "").trim(),
       prioridade: String(form.get("prioridade") || "").trim(),

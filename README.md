@@ -80,8 +80,12 @@ Regra importante:
 - `referencia_externa text`
 - `empresa gp_company`
 - `cliente text`
+- `gerente_projetos text`
+- `consultor text`
 - `titulo text`
 - `descricao text`
+- `documento_lrc_email text`
+- `os_item_ticket text`
 - `status text`
 - `responsavel text`
 - `prioridade gp_priority`

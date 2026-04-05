@@ -44,7 +44,7 @@
 
     <main>
       
-<section class="aen-section aen-container aen-gp-hero aen-fade-up">
+<section class="aen-section aen-container aen-gp-hero aen-fade-up" data-gp-public-shell hidden>
   <div class="aen-gp-hero-copy">
     <span class="aen-tag">Acesso privado corporativo</span>
     <h1>Área das GPs</h1>
@@ -260,7 +260,7 @@
         <div class="aen-gp-toolbar">
           <div>
             <label for="gp-search">Busca textual</label>
-            <input id="gp-search" type="search" placeholder="Cliente, título, empresa, responsável ou descrição" data-search-input>
+            <input id="gp-search" type="search" placeholder="Cliente, título, gerente, consultor, documento ou descrição" data-search-input>
           </div>
           <div>
             <label for="gp-status-filter">Status</label>
@@ -278,7 +278,7 @@
             </select>
           </div>
           <div>
-            <label for="gp-owner-filter">Responsável</label>
+            <label for="gp-owner-filter">Gerente / Responsável</label>
             <select id="gp-owner-filter" data-owner-filter>
               <option value="Todos">Todos</option>
             </select>
@@ -334,12 +334,28 @@
             <input id="gp-admin-client" name="cliente" type="text" maxlength="140" required placeholder="Nome do cliente">
           </div>
           <div>
+            <label for="gp-admin-manager">Gerente de Projetos</label>
+            <input id="gp-admin-manager" name="gerente_projetos" type="text" maxlength="140" placeholder="Nome do GP responsável">
+          </div>
+          <div>
+            <label for="gp-admin-consultant">Consultor</label>
+            <input id="gp-admin-consultant" name="consultor" type="text" maxlength="140" placeholder="Nome do consultor">
+          </div>
+          <div>
             <label for="gp-admin-title">Título</label>
             <input id="gp-admin-title" name="titulo" type="text" maxlength="160" required placeholder="Resumo da demanda ou orçamento">
           </div>
           <div class="is-full">
             <label for="gp-admin-description">Descrição</label>
             <textarea id="gp-admin-description" name="descricao" rows="4" placeholder="Descreva o escopo, o contexto e os próximos passos."></textarea>
+          </div>
+          <div>
+            <label for="gp-admin-document">Documento LRC/E-mail</label>
+            <input id="gp-admin-document" name="documento_lrc_email" type="text" maxlength="180" placeholder="Ex.: LRC-2026-001 ou e-mail de referência">
+          </div>
+          <div>
+            <label for="gp-admin-ticket">OS/Item/Ticket</label>
+            <input id="gp-admin-ticket" name="os_item_ticket" type="text" maxlength="180" placeholder="Ex.: OS-4101 / ITEM-03 / TK-9001">
           </div>
           <div>
             <label for="gp-admin-status">Status</label>
@@ -403,8 +419,13 @@
           <thead>
             <tr>
               <th scope="col">Empresa</th>
+              <th scope="col">Gerente de Projetos</th>
+              <th scope="col">Consultor</th>
               <th scope="col">Cliente</th>
               <th scope="col">Título</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Documento LRC/E-mail</th>
+              <th scope="col">OS/Item/Ticket</th>
               <th scope="col">Status</th>
               <th scope="col">Prioridade</th>
               <th scope="col">Responsável</th>

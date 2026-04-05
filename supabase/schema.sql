@@ -98,8 +98,12 @@ create table if not exists public.demandas (
 alter table public.demandas add column if not exists referencia_externa text;
 alter table public.demandas add column if not exists empresa public.gp_company;
 alter table public.demandas add column if not exists cliente text;
+alter table public.demandas add column if not exists gerente_projetos text;
+alter table public.demandas add column if not exists consultor text;
 alter table public.demandas add column if not exists titulo text;
 alter table public.demandas add column if not exists descricao text;
+alter table public.demandas add column if not exists documento_lrc_email text;
+alter table public.demandas add column if not exists os_item_ticket text;
 alter table public.demandas add column if not exists status text;
 alter table public.demandas add column if not exists responsavel text;
 alter table public.demandas add column if not exists prioridade public.gp_priority not null default 'Media';
