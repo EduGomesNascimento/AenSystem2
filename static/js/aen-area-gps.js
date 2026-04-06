@@ -83,6 +83,7 @@
 
   const state = {
     client: null,
+    supabaseConfig: null,
     session: null,
     profile: null,
     demandas: [],
@@ -129,6 +130,35 @@
     return Promise.race([Promise.resolve(promise), timeout]).finally(function () {
       window.clearTimeout(timerId);
     });
+  };
+  const fetchJsonWithTimeout = async (url, options, label, timeoutMs) => {
+    const controller = typeof window.AbortController === "function" ? new window.AbortController() : null;
+    const timerId = window.setTimeout(function () {
+      if (controller) controller.abort();
+    }, timeoutMs || AUTH_STEP_TIMEOUT_MS);
+    try {
+      const requestOptions = Object.assign({}, options || {});
+      if (controller) requestOptions.signal = controller.signal;
+      const response = await window.fetch(url, requestOptions);
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch (_error) {
+        payload = null;
+      }
+      if (!response.ok) {
+        const message = payload && (payload.error_description || payload.msg || payload.message || payload.error);
+        throw new Error(message || label + " falhou.");
+      }
+      return payload;
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        throw new Error(label + " demorou demais. Tente novamente.");
+      }
+      throw error;
+    } finally {
+      window.clearTimeout(timerId);
+    }
   };
   const priorityLabel = (value) => ({ Media: "Média", Critica: "Crítica" }[value] || value || "Média");
   const shortText = (value) => (String(value || "").trim() || "Sem descrição").slice(0, 170).replace(/\s+/g, " ");
@@ -821,6 +851,32 @@
     return "Não foi possível autenticar agora.";
   }
 
+  async function signInWithPasswordDirect(email, password) {
+    const config = state.supabaseConfig || {};
+    const baseUrl = String(config.url || "").replace(/\/+$/, "");
+    if (!baseUrl || !config.anonKey) {
+      throw new Error("Configuração do Supabase ausente.");
+    }
+    const authPayload = await fetchJsonWithTimeout(baseUrl + "/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: {
+        apikey: config.anonKey,
+        Authorization: "Bearer " + config.anonKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email: email, password: password })
+    }, "Autenticação", 12000);
+    if (!authPayload || !authPayload.access_token || !authPayload.refresh_token) {
+      throw new Error("Resposta de autenticação inválida.");
+    }
+    const session = await withTimeout(state.client.auth.setSession({
+      access_token: authPayload.access_token,
+      refresh_token: authPayload.refresh_token
+    }), "Criação da sessão");
+    if (session.error) throw session.error;
+    return session;
+  }
+
   async function handleLogin(event) {
     event.preventDefault();
     if (state.authBusy) return;
@@ -838,10 +894,7 @@
         await syncSession({ silent: true, reason: SYNC_REASON.login });
         return;
       }
-      const result = await withTimeout(
-        state.client.auth.signInWithPassword({ email: email, password: password }),
-        "Autenticação"
-      );
+      const result = await signInWithPasswordDirect(email, password);
       if (result.error) throw result.error;
       refs.loginForm.reset();
       state.session = result.data ? result.data.session : null;
@@ -1070,6 +1123,7 @@
       setInline(refs.loginFeedback, "Configuração pendente. Conecte o Supabase antes de liberar esta área.", "warning");
       return false;
     }
+    state.supabaseConfig = config;
     state.client = createClient(config.url, config.anonKey, {
       auth: {
         persistSession: true,
