@@ -84,6 +84,7 @@
   const state = {
     client: null,
     supabaseConfig: null,
+    privateTemplateHtml: "",
     session: null,
     profile: null,
     demandas: [],
@@ -261,9 +262,9 @@
   }
 
   function ensurePrivateView() {
-    if (!refs.private || !refs.privateTemplate) return;
+    if (!refs.private || !state.privateTemplateHtml) return;
     if (refs.private.dataset.rendered !== "true") {
-      refs.private.innerHTML = refs.privateTemplate.innerHTML;
+      refs.private.innerHTML = state.privateTemplateHtml;
       refs.private.dataset.rendered = "true";
     }
     refreshPrivateRefs();
@@ -271,6 +272,7 @@
   }
 
   function openLoginModal() {
+    if (!state.session || !state.profile) clearPrivateView();
     hide(refs.loginModal, false);
     refs.loginModal.classList.remove("is-closing");
     refs.loginModal.dataset.closing = "false";
@@ -590,6 +592,7 @@
     state.session = null;
     state.profile = null;
     resetData();
+    clearPrivateView();
     setDash("", "info");
     setInline(refs.mfaFeedback, "", "info");
     setView(VIEW.guest);
@@ -1162,6 +1165,11 @@
   }
 
   function bind() {
+    if (refs.privateTemplate) {
+      state.privateTemplateHtml = refs.privateTemplate.innerHTML;
+      refs.privateTemplate.remove();
+      refs.privateTemplate = null;
+    }
     root.querySelectorAll(".aen-gp-modal .aen-gp-lock").forEach(function (element) {
       element.remove();
     });
