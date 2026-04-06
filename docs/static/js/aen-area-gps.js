@@ -897,17 +897,15 @@
     setBusy(true);
     setInline(refs.loginFeedback, "Validando acesso...", "info");
     try {
-      if (state.session) {
-        state.syncInFlight = null;
-        await syncSession({ silent: true, reason: SYNC_REASON.login });
-        return;
-      }
+      state.session = null;
+      state.profile = null;
+      state.syncInFlight = null;
       const result = await signInWithPasswordDirect(email, password);
       if (result.error) throw result.error;
       refs.loginForm.reset();
       state.session = result.data ? result.data.session : null;
       try {
-        await state.client.auth.signOut({ scope: "others" });
+        await withTimeout(state.client.auth.signOut({ scope: "others" }), "Encerramento de sessões antigas", 6000);
       } catch (error) {
         console.warn("Não foi possível encerrar sessões antigas.", error);
       }
