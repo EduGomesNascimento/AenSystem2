@@ -1726,6 +1726,38 @@
   background: rgba(255, 255, 255, 0.04);
   color: var(--aen-text);
   border-color: rgba(226, 239, 239, 0.14);
+  color-scheme: dark;
+}
+
+.aen-page[data-theme="dark"] .aen-gp-app .aen-form select option {
+  background: #f7fbfa;
+  color: #122033;
+}
+
+.aen-page[data-theme="dark"] .aen-gp-app .aen-form select option:checked {
+  background: #1f6fd1;
+  color: #ffffff;
+}
+
+.aen-gp-app .aen-form input[type="file"] {
+  padding: 12px;
+}
+
+.aen-gp-file-link {
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--aen-primary-strong);
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.aen-page[data-theme="dark"] .aen-gp-file-link {
+  color: #84ddd3;
 }
 
 .aen-gp-app .aen-form input::placeholder,

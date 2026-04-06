@@ -5,6 +5,28 @@
   const ALLOWED_STATUSES = ["Aprovar", "Iniciar", "Desenvolvimento"];
   const ALL_STATUSES = ["Aprovar", "Iniciar", "Desenvolvimento", "Homologação", "Finalizado", "Cancelado"];
   const PRIORITIES = ["Baixa", "Media", "Alta", "Critica"];
+  const LRC_BUCKET = "demanda-documentos";
+  const DEMANDAS_SELECT = [
+    "id",
+    "referencia_externa",
+    "empresa",
+    "cliente",
+    "gerente_projetos",
+    "consultor",
+    "titulo",
+    "descricao",
+    "documento_lrc_email",
+    "documento_lrc_arquivo_nome",
+    "documento_lrc_arquivo_path",
+    "os_item_ticket",
+    "status",
+    "responsavel",
+    "prioridade",
+    "horas_previstas",
+    "horas_gastas",
+    "data_criacao",
+    "data_atualizacao"
+  ].join(", ");
   const STATUS_CLASS = {
     Aprovar: "is-approve",
     Iniciar: "is-start",
@@ -78,6 +100,7 @@
     adminResetButton: null,
     adminDeleteButton: null,
     adminFeedback: null,
+    lrcFileCurrent: null,
     adminActionsHead: null
   };
 
@@ -213,6 +236,7 @@
     refs.adminResetButton = root.querySelector("[data-admin-reset-button]");
     refs.adminDeleteButton = root.querySelector("[data-admin-delete-button]");
     refs.adminFeedback = root.querySelector("[data-admin-feedback]");
+    refs.lrcFileCurrent = root.querySelector("[data-lrc-file-current]");
     refs.adminActionsHead = root.querySelector("[data-admin-actions-head]");
   }
 
@@ -382,6 +406,7 @@
     }
     if (refs.adminRecordSelect) refs.adminRecordSelect.value = "";
     if (refs.adminDeleteButton) refs.adminDeleteButton.hidden = true;
+    if (refs.lrcFileCurrent) refs.lrcFileCurrent.textContent = "Nenhum arquivo anexado.";
     if (message) setAdminFeedback(message, tone || "info");
   }
 
@@ -431,8 +456,11 @@
   function renderProfile() {
     const user = state.session && state.session.user ? state.session.user : null;
     const scope = isAdmin() ? "Visão administrativa" : (state.profile && state.profile.empresa) || "Empresa não vinculada";
-    if (refs.companyName) refs.companyName.textContent = scope;
-    if (refs.userSummary) refs.userSummary.textContent = [state.profile && state.profile.nome, user && user.email].filter(Boolean).join(" · ") || "Sessão autenticada";
+    const profileName = isAdmin()
+      ? "ALEX (ADMIN)"
+      : [state.profile && state.profile.nome, roleLabel(state.profile && state.profile.role)].filter(Boolean).join(" · ");
+    if (refs.companyName) refs.companyName.textContent = "Seja bem-vindo, " + (profileName || "usuário");
+    if (refs.userSummary) refs.userSummary.textContent = [scope, user && user.email].filter(Boolean).join(" · ") || "Sessão autenticada";
     if (refs.roleChip) refs.roleChip.textContent = "Papel: " + roleLabel(state.profile && state.profile.role);
     if (refs.mfaChip) refs.mfaChip.textContent = mfaRequired()
       ? (state.aal.currentLevel === "aal2" ? "MFA: validado" : "MFA: pendente")
@@ -506,6 +534,21 @@
       + "</div>";
   }
 
+  function documentDisplay(item) {
+    const pieces = [];
+    if (item.documento_lrc_email) pieces.push(esc(item.documento_lrc_email));
+    if (item.documento_lrc_arquivo_path) {
+      pieces.push(
+        '<button class="aen-gp-file-link" type="button" data-lrc-download-path="'
+        + esc(item.documento_lrc_arquivo_path)
+        + '">'
+        + esc(item.documento_lrc_arquivo_nome || "Baixar arquivo LRC")
+        + "</button>"
+      );
+    }
+    return pieces.length ? pieces.join("<br>") : "-";
+  }
+
   function applyFilters() {
     const search = state.filters.search.trim().toLowerCase();
     state.visible = state.demandas.filter(function (item) {
@@ -523,6 +566,7 @@
         item.titulo,
         item.descricao,
         item.documento_lrc_email,
+        item.documento_lrc_arquivo_nome,
         item.os_item_ticket,
         item.responsavel,
         item.status,
@@ -543,7 +587,7 @@
           + '<td data-label="Cliente">' + esc(item.cliente || "-") + "</td>"
           + '<td data-label="Título"><div class="aen-gp-title-cell"><strong>' + esc(item.titulo || "Sem título") + "</strong></div></td>"
           + '<td data-label="Descrição">' + esc(shortText(item.descricao)) + "</td>"
-          + '<td data-label="Documento LRC/E-mail">' + esc(item.documento_lrc_email || "-") + "</td>"
+          + '<td data-label="Documento LRC/E-mail">' + documentDisplay(item) + "</td>"
           + '<td data-label="OS/Item/Ticket">' + esc(item.os_item_ticket || "-") + "</td>"
           + '<td data-label="Status"><span class="aen-gp-status-badge ' + statusClass + '">' + esc(item.status) + "</span></td>"
           + '<td data-label="Prioridade"><span class="aen-gp-priority-badge ' + priorityClass + '">' + esc(priorityLabel(item.prioridade)) + "</span></td>"
@@ -568,7 +612,7 @@
           + "<span><small>Gerente de Projetos</small>" + esc(item.gerente_projetos || "-") + "</span>"
           + "<span><small>Consultor</small>" + esc(item.consultor || "-") + "</span>"
           + "<span><small>Cliente</small>" + esc(item.cliente || "-") + "</span>"
-          + "<span><small>Documento LRC/E-mail</small>" + esc(item.documento_lrc_email || "-") + "</span>"
+          + "<span><small>Documento LRC/E-mail</small>" + documentDisplay(item) + "</span>"
           + "<span><small>OS/Item/Ticket</small>" + esc(item.os_item_ticket || "-") + "</span>"
           + "<span><small>Responsável</small>" + esc(item.responsavel || "-") + "</span>"
           + '<span><small>Status</small><span class="aen-gp-status-badge ' + statusClass + '">' + esc(item.status) + "</span></span>"
@@ -664,6 +708,11 @@
     refs.adminForm.elements.namedItem("titulo").value = item.titulo || "";
     refs.adminForm.elements.namedItem("descricao").value = item.descricao || "";
     refs.adminForm.elements.namedItem("documento_lrc_email").value = item.documento_lrc_email || "";
+    if (refs.lrcFileCurrent) {
+      refs.lrcFileCurrent.textContent = item.documento_lrc_arquivo_nome
+        ? "Arquivo atual: " + item.documento_lrc_arquivo_nome
+        : "Nenhum arquivo anexado.";
+    }
     refs.adminForm.elements.namedItem("os_item_ticket").value = item.os_item_ticket || "";
     refs.adminForm.elements.namedItem("status").value = item.status || "Aprovar";
     refs.adminForm.elements.namedItem("prioridade").value = item.prioridade || "Media";
@@ -779,7 +828,7 @@
     if (!isAdmin()) return;
     const result = await state.client
       .from("demandas")
-      .select("id, referencia_externa, empresa, cliente, gerente_projetos, consultor, titulo, descricao, documento_lrc_email, os_item_ticket, status, responsavel, prioridade, horas_previstas, horas_gastas, data_criacao, data_atualizacao")
+      .select(DEMANDAS_SELECT)
       .order("data_atualizacao", { ascending: false });
     if (result.error) throw result.error;
     state.adminDemandas = result.data || [];
@@ -796,7 +845,7 @@
     try {
       const result = await state.client
         .from("demandas")
-        .select("id, referencia_externa, empresa, cliente, gerente_projetos, consultor, titulo, descricao, documento_lrc_email, os_item_ticket, status, responsavel, prioridade, horas_previstas, horas_gastas, data_criacao, data_atualizacao")
+        .select(DEMANDAS_SELECT)
         .in("status", ALLOWED_STATUSES)
         .order("data_atualizacao", { ascending: false });
       if (result.error) throw result.error;
@@ -1043,6 +1092,57 @@
     return payload;
   }
 
+  function safeFileName(name) {
+    return String(name || "documento")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 120) || "documento";
+  }
+
+  async function uploadLrcFile(file, payload) {
+    if (!file) return null;
+    if (!state.client || !state.client.storage) {
+      throw new Error("Storage do Supabase não está disponível.");
+    }
+    const path = [
+      payload.empresa || "sem-empresa",
+      safeFileName(payload.referencia_externa || "sem-referencia"),
+      Date.now() + "-" + safeFileName(file.name)
+    ].join("/");
+    const result = await withTimeout(
+      state.client.storage.from(LRC_BUCKET).upload(path, file, {
+        cacheControl: "3600",
+        upsert: false
+      }),
+      "Upload do arquivo LRC",
+      30000
+    );
+    if (result.error) throw result.error;
+    return { path: path, name: file.name };
+  }
+
+  async function openLrcDownload(path) {
+    if (!path || !state.client || !state.client.storage) return;
+    try {
+      const result = await withTimeout(
+        state.client.storage.from(LRC_BUCKET).createSignedUrl(path, 60),
+        "Geração do link de download",
+        12000
+      );
+      if (result.error) throw result.error;
+      if (result.data && result.data.signedUrl) {
+        window.open(result.data.signedUrl, "_blank", "noopener");
+      }
+    } catch (error) {
+      console.error(error);
+      const message = error && error.message ? error.message : "Não foi possível gerar o download do LRC.";
+      if (refs.dashboardFeedback) setDash(message, "error");
+      if (refs.adminFeedback) setAdminFeedback(message, "error");
+    }
+  }
+
   async function saveAdminDemand(event) {
     event.preventDefault();
     if (!isAdmin()) return;
@@ -1051,6 +1151,14 @@
     try {
       const payload = readAdminPayload();
       const id = refs.adminForm.elements.namedItem("id").value;
+      const fileInput = refs.adminForm.elements.namedItem("documento_lrc_arquivo");
+      const file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+      if (file) {
+        setAdminFeedback("Enviando arquivo LRC...", "info");
+        const upload = await uploadLrcFile(file, payload);
+        payload.documento_lrc_arquivo_nome = upload.name;
+        payload.documento_lrc_arquivo_path = upload.path;
+      }
       let result;
       if (id) {
         result = await state.client.from("demandas").update(payload).eq("id", id).select("id").single();
@@ -1109,8 +1217,13 @@
   }
 
   function handleAdminActions(event) {
+    const downloadButton = event.target.closest("[data-lrc-download-path]");
     const editButton = event.target.closest("[data-admin-edit-id]");
     const deleteButton = event.target.closest("[data-admin-delete-id]");
+    if (downloadButton) {
+      openLrcDownload(downloadButton.getAttribute("data-lrc-download-path"));
+      return;
+    }
     if (editButton) {
       const item = findAdminDemanda(editButton.getAttribute("data-admin-edit-id"));
       if (item) fillAdminForm(item);

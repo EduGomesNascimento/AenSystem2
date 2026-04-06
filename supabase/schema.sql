@@ -103,6 +103,8 @@ alter table public.demandas add column if not exists consultor text;
 alter table public.demandas add column if not exists titulo text;
 alter table public.demandas add column if not exists descricao text;
 alter table public.demandas add column if not exists documento_lrc_email text;
+alter table public.demandas add column if not exists documento_lrc_arquivo_nome text;
+alter table public.demandas add column if not exists documento_lrc_arquivo_path text;
 alter table public.demandas add column if not exists os_item_ticket text;
 alter table public.demandas add column if not exists status text;
 alter table public.demandas add column if not exists responsavel text;
@@ -159,6 +161,11 @@ create index if not exists demandas_empresa_priority_owner_idx
   on public.demandas (empresa, prioridade, responsavel);
 create index if not exists audit_logs_user_created_idx
   on public.audit_logs (user_id, created_at desc);
+
+insert into storage.buckets (id, name, public)
+values ('demanda-documentos', 'demanda-documentos', false)
+on conflict (id) do update
+  set public = false;
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -398,7 +405,7 @@ with check (
 drop policy if exists "demandas_select_authorized" on public.demandas;
 create policy "demandas_select_authorized"
 on public.demandas
-as restrictive
+as permissive
 for select
 to authenticated
 using (
@@ -435,7 +442,7 @@ using (
 drop policy if exists "demandas_insert_admin" on public.demandas;
 create policy "demandas_insert_admin"
 on public.demandas
-as restrictive
+as permissive
 for insert
 to authenticated
 with check (
@@ -456,7 +463,7 @@ with check (
 drop policy if exists "demandas_update_admin" on public.demandas;
 create policy "demandas_update_admin"
 on public.demandas
-as restrictive
+as permissive
 for update
 to authenticated
 using (
@@ -491,7 +498,7 @@ with check (
 drop policy if exists "demandas_delete_admin" on public.demandas;
 create policy "demandas_delete_admin"
 on public.demandas
-as restrictive
+as permissive
 for delete
 to authenticated
 using (
@@ -518,6 +525,90 @@ to authenticated
 using (
   user_id = auth.uid()
   or exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+      and p.ativo = true
+      and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
+      and (p.mfa_required = false or public.current_aal() = 'aal2')
+  )
+);
+
+drop policy if exists "demanda_documentos_select_authorized" on storage.objects;
+create policy "demanda_documentos_select_authorized"
+on storage.objects
+as permissive
+for select
+to authenticated
+using (
+  bucket_id = 'demanda-documentos'
+  and exists (
+    select 1
+    from public.demandas as d
+    where d.documento_lrc_arquivo_path = storage.objects.name
+  )
+);
+
+drop policy if exists "demanda_documentos_insert_admin" on storage.objects;
+create policy "demanda_documentos_insert_admin"
+on storage.objects
+as permissive
+for insert
+to authenticated
+with check (
+  bucket_id = 'demanda-documentos'
+  and exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+      and p.ativo = true
+      and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
+      and (p.mfa_required = false or public.current_aal() = 'aal2')
+  )
+);
+
+drop policy if exists "demanda_documentos_update_admin" on storage.objects;
+create policy "demanda_documentos_update_admin"
+on storage.objects
+as permissive
+for update
+to authenticated
+using (
+  bucket_id = 'demanda-documentos'
+  and exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+      and p.ativo = true
+      and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
+      and (p.mfa_required = false or public.current_aal() = 'aal2')
+  )
+)
+with check (
+  bucket_id = 'demanda-documentos'
+  and exists (
+    select 1
+    from public.profiles as p
+    where p.id = auth.uid()
+      and p.ativo = true
+      and p.role = 'admin'
+      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
+      and (p.mfa_required = false or public.current_aal() = 'aal2')
+  )
+);
+
+drop policy if exists "demanda_documentos_delete_admin" on storage.objects;
+create policy "demanda_documentos_delete_admin"
+on storage.objects
+as permissive
+for delete
+to authenticated
+using (
+  bucket_id = 'demanda-documentos'
+  and exists (
     select 1
     from public.profiles as p
     where p.id = auth.uid()
