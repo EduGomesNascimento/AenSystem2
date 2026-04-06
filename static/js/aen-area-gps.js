@@ -18,6 +18,7 @@
   };
   const VIEW = { boot: "boot", guest: "guest", mfa: "mfa", private: "private" };
   const SYNC_REASON = { restore: "restore", login: "login", mfa: "mfa", session: "session" };
+  const AUTH_STEP_TIMEOUT_MS = 15000;
 
   const refs = {
     publicShell: document.querySelector("[data-gp-public-shell]"),
@@ -117,6 +118,17 @@
   const profileFromRpc = (payload) => {
     if (Array.isArray(payload)) return payload[0] || null;
     return payload || null;
+  };
+  const withTimeout = (promise, label, timeoutMs) => {
+    let timerId = 0;
+    const timeout = new Promise(function (_resolve, reject) {
+      timerId = window.setTimeout(function () {
+        reject(new Error(label + " demorou demais. Tente novamente."));
+      }, timeoutMs || AUTH_STEP_TIMEOUT_MS);
+    });
+    return Promise.race([Promise.resolve(promise), timeout]).finally(function () {
+      window.clearTimeout(timerId);
+    });
   };
   const priorityLabel = (value) => ({ Media: "Média", Critica: "Crítica" }[value] || value || "Média");
   const shortText = (value) => (String(value || "").trim() || "Sem descrição").slice(0, 170).replace(/\s+/g, " ");
@@ -345,11 +357,11 @@
   async function logAudit(eventType, eventStatus, details) {
     if (!state.client || !state.session) return;
     try {
-      await state.client.rpc("log_audit_event", {
+      await withTimeout(state.client.rpc("log_audit_event", {
         p_event_type: eventType,
         p_event_status: eventStatus || "success",
         p_details: details || {}
-      });
+      }), "Registro de auditoria", 8000);
     } catch (_error) {
       console.warn("Falha ao registrar auditoria.");
     }
@@ -627,16 +639,8 @@
   async function enforceAccess(reason) {
     const syncReason = reason || SYNC_REASON.restore;
     const fromExplicitLogin = syncReason === SYNC_REASON.login || syncReason === SYNC_REASON.mfa;
-    const ensured = await state.client.rpc("ensure_my_profile");
-    if (ensured.error) {
-      if (isMissingFunctionError(ensured.error, "ensure_my_profile")) {
-        await resetSessionAndShowGuest("A configuração do acesso está desatualizada no Supabase. Reaplique o schema e tente novamente.", "error");
-        return false;
-      }
-      console.warn(ensured.error);
-    }
 
-    let profile = await state.client.rpc("get_my_profile");
+    let profile = await withTimeout(state.client.rpc("get_my_profile"), "Busca do perfil");
     if (profile.error) {
       if (isMissingFunctionError(profile.error, "get_my_profile")) {
         await resetSessionAndShowGuest("A configuração do acesso está desatualizada no Supabase. Reaplique o schema e tente novamente.", "error");
@@ -657,11 +661,11 @@
         ativo: true,
         mfa_required: false
       };
-      const bootstrap = await state.client.from("profiles").insert(payload);
+      const bootstrap = await withTimeout(state.client.from("profiles").insert(payload), "Criação do perfil");
       if (bootstrap.error && bootstrap.error.code !== "23505") {
         console.warn(bootstrap.error);
       }
-      profile = await state.client.rpc("get_my_profile");
+      profile = await withTimeout(state.client.rpc("get_my_profile"), "Busca do perfil");
       if (profile.error) throw profile.error;
       state.profile = profileFromRpc(profile.data);
     }
@@ -678,7 +682,7 @@
       return false;
     }
 
-    await fetchAal();
+    await withTimeout(fetchAal(), "Verificação de MFA");
     renderProfile();
 
     if (!state.profile.ativo && !fromExplicitLogin) {
@@ -706,12 +710,12 @@
     }
 
     if (mfaRequired()) {
-      await fetchFactors();
+      await withTimeout(fetchFactors(), "Consulta dos fatores MFA");
       if (!state.mfa.verified.length) {
-        const enroll = await state.client.auth.mfa.enroll({
+        const enroll = await withTimeout(state.client.auth.mfa.enroll({
           factorType: "totp",
           friendlyName: "AENSYSTEMS MFA"
-        });
+        }), "Ativação do MFA");
         if (enroll.error) throw enroll.error;
         state.mfa.factorId = enroll.data.id;
         state.mfa.secret = enroll.data.totp ? enroll.data.totp.secret || "" : "";
@@ -792,18 +796,18 @@
     const options = opts || {};
     const reason = options.reason || SYNC_REASON.restore;
     if (!options.silent) setBoot("Validando sessão e regras de acesso...");
-    const session = await state.client.auth.getSession();
+    const session = await withTimeout(state.client.auth.getSession(), "Validação da sessão");
     state.session = session.data ? session.data.session : null;
     if (!state.session) {
       showGuest(options.message || "", options.tone || "info");
       return;
     }
-    const user = await state.client.auth.getUser();
+    const user = await withTimeout(state.client.auth.getUser(), "Validação do usuário");
     if (user.error || !user.data || !user.data.user) {
       await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
       return;
     }
-    if (await enforceAccess(reason)) await loadDashboard();
+    if (await enforceAccess(reason)) await withTimeout(loadDashboard(), "Carregamento do painel", 25000);
   }
 
   function authError(error) {
@@ -830,10 +834,14 @@
     setInline(refs.loginFeedback, "Validando acesso...", "info");
     try {
       if (state.session) {
+        state.syncInFlight = null;
         await syncSession({ silent: true, reason: SYNC_REASON.login });
         return;
       }
-      const result = await state.client.auth.signInWithPassword({ email: email, password: password });
+      const result = await withTimeout(
+        state.client.auth.signInWithPassword({ email: email, password: password }),
+        "Autenticação"
+      );
       if (result.error) throw result.error;
       refs.loginForm.reset();
       state.session = result.data ? result.data.session : null;
@@ -843,11 +851,18 @@
         console.warn("Não foi possível encerrar sessões antigas.", error);
       }
       setInline(refs.loginFeedback, "Senha validada. Conferindo perfil e MFA...", "success");
-      await syncSession({ silent: true, reason: SYNC_REASON.login });
+      state.syncInFlight = null;
+      if (await withTimeout(enforceAccess(SYNC_REASON.login), "Conferência de perfil e MFA")) {
+        setInline(refs.loginFeedback, "Acesso liberado. Carregando painel...", "success");
+        await withTimeout(loadDashboard(), "Carregamento do painel", 25000);
+      }
       await logAudit("login_success", "success", { aal: state.aal.currentLevel });
     } catch (error) {
       console.error(error);
-      setInline(refs.loginFeedback, authError(error), "error");
+      const message = error && /demorou demais/i.test(String(error.message || ""))
+        ? error.message
+        : authError(error);
+      setInline(refs.loginFeedback, message, "error");
     } finally {
       setBusy(false);
     }
@@ -1121,4 +1136,3 @@
 
   init();
 })();
-
