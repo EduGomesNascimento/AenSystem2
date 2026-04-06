@@ -176,7 +176,7 @@
     hide(refs.guest, view !== VIEW.guest);
     hide(refs.mfa, view !== VIEW.mfa);
     hide(refs.private, view !== VIEW.private);
-    if (view !== VIEW.guest) closeLoginModal();
+    if (view !== VIEW.guest) closeLoginModal({ instant: true });
   }
 
   function refreshPrivateRefs() {
@@ -284,6 +284,13 @@
     const settings = options || {};
     const onDone = typeof settings.onDone === "function" ? settings.onDone : null;
     if (!refs.loginModal || refs.loginModal.hidden) {
+      if (onDone) onDone();
+      return;
+    }
+    if (settings.instant) {
+      refs.loginModal.classList.remove("is-closing");
+      refs.loginModal.dataset.closing = "false";
+      hide(refs.loginModal, true);
       if (onDone) onDone();
       return;
     }
@@ -795,6 +802,7 @@
       fillFilters();
       applyFilters();
       renderProfile();
+      closeLoginModal({ instant: true });
       if (!state.demandas.length) setDash("Nenhuma demanda ativa foi encontrada para o seu escopo atual.", "info");
       await logAudit("dashboard_view", "success", {
         empresa: state.profile.empresa,
