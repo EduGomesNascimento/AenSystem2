@@ -2005,3 +2005,173 @@
   background: linear-gradient(135deg, #149e92, #38b86b) !important;
   border-color: rgba(20, 158, 146, 0.35) !important;
 }
+
+/* KPI cards */
+.aen-gp-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.aen-gp-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 24px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .aen-gp-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .aen-gp-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Password toggle */
+.aen-gp-input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.aen-gp-input-icon-wrap input {
+  flex: 1;
+  padding-right: 44px;
+}
+
+.aen-gp-toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--aen-muted);
+  display: flex;
+  align-items: center;
+}
+
+.aen-gp-toggle-password:hover {
+  color: var(--aen-primary);
+}
+
+/* Toolbar counter + clear button row */
+.aen-gp-toolbar-counter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.aen-gp-clear-btn {
+  font-size: 0.82rem;
+  padding: 4px 12px;
+}
+
+/* Button loading spinner */
+.aen-btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  animation: aen-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.aen-gp-modal .aen-btn-spinner {
+  border-color: rgba(20, 96, 110, 0.3);
+  border-top-color: #0e6f78;
+}
+
+/* Login modal brand header */
+.aen-gp-modal-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.aen-gp-modal-logo {
+  width: 44px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+/* Email input with prefix icon */
+.aen-gp-input-has-icon {
+  position: relative;
+}
+
+.aen-gp-input-prefix-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--aen-muted);
+  font-size: 0.95rem;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.aen-gp-input-with-icon {
+  padding-left: 36px !important;
+}
+
+/* MFA code input */
+.aen-gp-code-input {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  padding: 14px 16px !important;
+}
+
+/* MFA footer (back button) */
+.aen-gp-mfa-footer {
+  margin-top: 4px;
+  display: flex;
+  justify-content: center;
+}
+
+.aen-gp-mfa-footer .aen-btn {
+  font-size: 0.88rem;
+  padding: 8px 16px;
+  min-height: 40px;
+  background: transparent;
+  color: var(--aen-muted);
+  border-color: var(--aen-border);
+}
+
+.aen-gp-mfa-footer .aen-btn:hover,
+.aen-gp-mfa-footer .aen-btn:focus-visible {
+  color: var(--aen-text);
+  border-color: var(--aen-primary);
+}
+
+/* Error state */
+.aen-gp-state.is-error {
+  border-color: rgba(161, 25, 42, 0.22);
+  background: rgba(161, 25, 42, 0.04);
+}
+
+.aen-gp-state.is-error strong {
+  color: #a1192a;
+}
+
+.aen-page[data-theme="dark"] .aen-gp-state.is-error {
+  background: rgba(161, 25, 42, 0.08);
+}
+
+.aen-page[data-theme="dark"] .aen-gp-state.is-error strong {
+  color: #f08090;
+}

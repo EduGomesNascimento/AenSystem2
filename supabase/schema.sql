@@ -42,7 +42,14 @@ begin
   if not exists (
     select 1 from pg_type where typnamespace = 'public'::regnamespace and typname = 'gp_role'
   ) then
-    create type public.gp_role as enum ('gp', 'consultor', 'admin');
+    create type public.gp_role as enum ('gp', 'consultor', 'admin', 'viewer');
+  else
+    if not exists (
+      select 1 from pg_enum e join pg_type t on t.oid = e.enumtypid
+      where t.typnamespace = 'public'::regnamespace and t.typname = 'gp_role' and e.enumlabel = 'viewer'
+    ) then
+      alter type public.gp_role add value 'viewer';
+    end if;
   end if;
 end
 $$;
@@ -67,6 +74,7 @@ alter table public.profiles add column if not exists empresa public.gp_company;
 alter table public.profiles add column if not exists role public.gp_role not null default 'gp';
 alter table public.profiles add column if not exists ativo boolean not null default true;
 alter table public.profiles add column if not exists mfa_required boolean not null default false;
+alter table public.profiles add column if not exists ultimo_acesso timestamptz;
 alter table public.profiles add column if not exists created_at timestamptz not null default timezone('utc', now());
 alter table public.profiles add column if not exists updated_at timestamptz not null default timezone('utc', now());
 
@@ -147,6 +155,7 @@ $$;
 create table if not exists public.audit_logs (
   id bigint generated always as identity primary key,
   user_id uuid references auth.users (id) on delete set null,
+  email text,
   empresa public.gp_company,
   role public.gp_role,
   event_type text not null,
@@ -154,6 +163,8 @@ create table if not exists public.audit_logs (
   details jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default timezone('utc', now())
 );
+
+alter table public.audit_logs add column if not exists email text;
 
 create index if not exists demandas_empresa_status_updated_idx
   on public.demandas (empresa, status, data_atualizacao desc);
@@ -167,14 +178,22 @@ values ('demanda-documentos', 'demanda-documentos', false)
 on conflict (id) do update
   set public = false;
 
-create or replace function public.set_updated_at()
+create or replace function public.set_profiles_updated_at()
 returns trigger
 language plpgsql
 as $$
 begin
-  if tg_table_schema = 'public' and tg_table_name in ('profiles', 'demandas') then
-    new.updated_at = timezone('utc', now());
-  end if;
+  new.updated_at = timezone('utc', now());
+  return new;
+end;
+$$;
+
+create or replace function public.set_demandas_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.data_atualizacao = timezone('utc', now());
   return new;
 end;
 $$;
@@ -182,12 +201,12 @@ $$;
 drop trigger if exists set_profiles_updated_at on public.profiles;
 create trigger set_profiles_updated_at
 before update on public.profiles
-for each row execute function public.set_updated_at();
+for each row execute function public.set_profiles_updated_at();
 
 drop trigger if exists set_demandas_updated_at on public.demandas;
 create trigger set_demandas_updated_at
 before update on public.demandas
-for each row execute function public.set_updated_at();
+for each row execute function public.set_demandas_updated_at();
 
 create or replace function public.handle_new_user()
 returns trigger
@@ -282,6 +301,23 @@ begin
 end;
 $$;
 
+create or replace function public.touch_ultimo_acesso()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null then
+    return;
+  end if;
+  update public.profiles
+  set ultimo_acesso = timezone('utc', now()),
+      updated_at = timezone('utc', now())
+  where id = auth.uid();
+end;
+$$;
+
 create or replace function public.get_my_profile()
 returns table (
   id uuid,
@@ -340,8 +376,16 @@ begin
     return;
   end if;
 
-  insert into public.audit_logs (user_id, empresa, role, event_type, event_status, details)
-  values (auth.uid(), v_profile.empresa, v_profile.role, p_event_type, coalesce(p_event_status, 'success'), coalesce(p_details, '{}'::jsonb));
+  insert into public.audit_logs (user_id, email, empresa, role, event_type, event_status, details)
+  values (
+    auth.uid(),
+    v_profile.email,
+    v_profile.empresa,
+    v_profile.role,
+    p_event_type,
+    coalesce(p_event_status, 'success'),
+    coalesce(p_details, '{}'::jsonb)
+  );
 end;
 $$;
 
@@ -357,7 +401,8 @@ grant select on public.profiles to authenticated;
 grant insert on public.profiles to authenticated;
 grant select on public.demandas to authenticated;
 grant insert, update, delete on public.demandas to authenticated;
-grant select on public.audit_logs to authenticated;
+-- audit_logs: frontend não pode ler nem inserir diretamente; inserts ocorrem via security definer RPC
+revoke all on public.audit_logs from anon, authenticated;
 revoke execute on function public.log_audit_event(text, text, jsonb) from public, anon;
 revoke execute on function public.current_aal() from public, anon;
 revoke execute on function public.ensure_my_profile() from public, anon;
@@ -366,6 +411,8 @@ grant execute on function public.log_audit_event(text, text, jsonb) to authentic
 grant execute on function public.current_aal() to authenticated;
 grant execute on function public.ensure_my_profile() to authenticated;
 grant execute on function public.get_my_profile() to authenticated;
+revoke execute on function public.touch_ultimo_acesso() from public, anon;
+grant execute on function public.touch_ultimo_acesso() to authenticated;
 
 drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"
@@ -516,24 +563,9 @@ using (
   )
 );
 
+-- audit_logs: nenhuma policy de SELECT — tabela não é lida pelo frontend
+-- inserts são feitos exclusivamente via log_audit_event() (security definer)
 drop policy if exists "audit_logs_select_self_or_admin" on public.audit_logs;
-create policy "audit_logs_select_self_or_admin"
-on public.audit_logs
-as restrictive
-for select
-to authenticated
-using (
-  user_id = auth.uid()
-  or exists (
-    select 1
-    from public.profiles as p
-    where p.id = auth.uid()
-      and p.ativo = true
-      and p.role = 'admin'
-      and lower(coalesce(p.email, '')) = 'aensistemas@gmail.com'
-      and (p.mfa_required = false or public.current_aal() = 'aal2')
-  )
-);
 
 drop policy if exists "demanda_documentos_select_authorized" on storage.objects;
 create policy "demanda_documentos_select_authorized"

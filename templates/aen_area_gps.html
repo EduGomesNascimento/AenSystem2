@@ -1,31 +1,16 @@
 {% extends "aen_base.html" %}
 
-{% block title %}AEN SYSTEMS | Área das GPs{% endblock %}
+{% block title %}AEN SYSTEMS | Área das Gestoras de Projeto{% endblock %}
 {% block meta_description %}Acompanhe demandas e orçamentos em andamento com acesso privado, segurança reforçada e segregação por empresa.{% endblock %}
 {% block meta_robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
 <section class="aen-section aen-container aen-gp-hero aen-fade-up" data-gp-public-shell hidden>
   <div class="aen-gp-hero-copy">
-    <span class="aen-tag">Acesso privado corporativo</span>
-    <h1>Área das GPs</h1>
-    <p>Ambiente reservado para acompanhamento de demandas e orçamentos em andamento. O acesso é segregado por empresa e, para consultores, protegido com MFA por aplicativo autenticador.</p>
-    <div class="aen-feature-tags aen-stagger">
-      <span>Empresas: INTELECTA e PRODALY</span>
-      <span>Perfis: gp, consultor e admin</span>
-      <span>Supabase Auth com MFA por TOTP</span>
-      <span>RLS como proteção principal</span>
-    </div>
+    <span class="aen-tag">Área privada</span>
+    <h1>Área das Gestoras de Projeto</h1>
+    <p>Seja bem-vindo. Faça login para acessar suas demandas autorizadas.</p>
   </div>
-  <aside class="aen-gp-summary-card">
-    <strong>Diretrizes desta área</strong>
-    <ul class="aen-list">
-      <li>Sem cadastro público: usuários são criados manualmente pelo administrador.</li>
-      <li>Somente status Aprovar, Iniciar e Desenvolvimento entram na visualização.</li>
-      <li>Consultores precisam concluir MFA para liberar a sessão.</li>
-      <li>O front-end nunca substitui as regras de autorização do banco.</li>
-    </ul>
-  </aside>
 </section>
 
 <section class="aen-section aen-container">
@@ -40,40 +25,19 @@
       <p class="aen-muted">Aguarde enquanto conferimos autenticação, perfil e MFA.</p>
     </div>
 
-    <div class="aen-gp-auth-grid" data-guest-view hidden>
+    <div class="aen-gp-auth-grid is-simple" data-guest-view hidden>
       <article class="aen-card aen-gp-panel">
         <div class="aen-gp-panel-head">
           <div>
             <span class="aen-gp-eyebrow">Seja bem-vindo</span>
-            <h2>Entre para acompanhar suas demandas</h2>
+            <h2>Acesse sua área autorizada</h2>
           </div>
-          <span class="aen-gp-lock" aria-hidden="true">Privado</span>
         </div>
 
-        <p class="aen-muted">O acesso à Área das GPs é liberado somente para usuários autorizados pela AEN SYSTEMS. Use o botão abaixo para abrir o login seguro e validar sua sessão.</p>
+        <p class="aen-muted">Entre com seu usuário para carregar o painel conforme seu nome e papel.</p>
 
         <div class="aen-gp-guest-actions">
-          <button class="aen-btn primary" type="button" data-login-open-button>Acessar Área das GPs</button>
-          <p class="aen-muted">Sem cadastro público. Contas são provisionadas manualmente.</p>
-        </div>
-      </article>
-
-      <article class="aen-card aen-gp-panel aen-gp-panel-muted">
-        <span class="aen-gp-eyebrow">Segurança</span>
-        <h2>Como o acesso é protegido</h2>
-        <div class="aen-gp-checklist">
-          <div>
-            <strong>Fonte oficial</strong>
-            <p class="aen-muted">Todos os dados vêm do banco Supabase. O navegador não acessa planilhas locais.</p>
-          </div>
-          <div>
-            <strong>Isolamento por empresa</strong>
-            <p class="aen-muted">Usuários de INTELECTA veem somente INTELECTA. Usuários de PRODALY veem somente PRODALY.</p>
-          </div>
-          <div>
-            <strong>MFA para consultores</strong>
-            <p class="aen-muted">Contas com papel consultor exigem autenticação adicional por aplicativo autenticador.</p>
-          </div>
+          <button class="aen-btn primary" type="button" data-login-open-button>Acessar Área das Gestoras de Projeto</button>
         </div>
       </article>
     </div>
@@ -82,10 +46,11 @@
       <div class="aen-gp-modal-backdrop"></div>
       <article class="aen-card aen-gp-modal" role="dialog" aria-modal="true" aria-labelledby="gp-login-title">
         <button class="aen-gp-modal-close" type="button" data-login-close-button aria-label="Fechar login">×</button>
-        <div class="aen-gp-panel-head">
+        <div class="aen-gp-modal-brand">
+          <img src="{{ url_for('static', filename='aensystems/logo-aen.png') }}" alt="AEN SYSTEMS" class="aen-gp-modal-logo">
           <div>
             <span class="aen-gp-eyebrow">Login</span>
-            <h2 id="gp-login-title">Entrar na Área das GPs</h2>
+            <h2 id="gp-login-title">Área das Gestoras de Projeto</h2>
           </div>
         </div>
 
@@ -94,11 +59,19 @@
         <form class="aen-form aen-gp-login-form" data-login-form novalidate>
           <div>
             <label for="gp-email">E-mail</label>
-            <input id="gp-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="nome@empresa.com.br">
+            <div class="aen-gp-input-icon-wrap aen-gp-input-has-icon">
+              <span class="aen-gp-input-prefix-icon" aria-hidden="true">✉</span>
+              <input id="gp-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="nome@empresa.com.br" class="aen-gp-input-with-icon">
+            </div>
           </div>
-          <div>
+          <div class="aen-gp-password-wrap">
             <label for="gp-password">Senha</label>
-            <input id="gp-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha">
+            <div class="aen-gp-input-icon-wrap">
+              <input id="gp-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha">
+              <button class="aen-gp-toggle-password" type="button" data-toggle-password aria-label="Mostrar ou ocultar senha" tabindex="-1">
+                <span data-eye-icon aria-hidden="true">👁</span>
+              </button>
+            </div>
           </div>
           <button class="aen-btn primary" type="submit" data-login-submit>Entrar</button>
         </form>
@@ -147,20 +120,24 @@
 
         <div class="aen-gp-mfa-step" data-mfa-challenge-panel hidden>
           <div class="aen-gp-security-card">
-            <strong>Autenticação adicional pendente</strong>
-            <p class="aen-muted">Seu perfil consultor já possui um fator verificado. Informe o código atual do aplicativo autenticador para concluir o login.</p>
+            <strong>Código de 6 dígitos</strong>
+            <p class="aen-muted">Abra o aplicativo autenticador (Google Authenticator, Microsoft Authenticator ou similar) e insira o código atual de 6 dígitos.</p>
           </div>
 
           <form class="aen-form" data-mfa-challenge-form novalidate>
             <div>
               <label for="gp-mfa-code">Código do autenticador</label>
-              <input id="gp-mfa-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required>
+              <input id="gp-mfa-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required class="aen-gp-code-input">
             </div>
             <button class="aen-btn primary" type="submit" data-mfa-challenge-submit>Validar código</button>
           </form>
         </div>
 
         <div class="aen-gp-inline-state" data-mfa-feedback aria-live="polite"></div>
+
+        <div class="aen-gp-mfa-footer">
+          <button class="aen-btn" type="button" data-mfa-back-button>← Voltar / Sair</button>
+        </div>
       </article>
 
       <article class="aen-card aen-gp-panel aen-gp-panel-muted">
@@ -197,46 +174,24 @@
         </div>
       </section>
 
-      <section class="aen-gp-meta-grid">
-        <article class="aen-card aen-gp-security-card">
-          <span class="aen-gp-eyebrow">Perfil</span>
-          <div class="aen-gp-badges">
-            <span class="aen-gp-chip" data-role-chip>Papel</span>
-            <span class="aen-gp-chip" data-mfa-chip>MFA</span>
-            <span class="aen-gp-chip" data-session-chip>Sessão</span>
-          </div>
-          <p class="aen-muted">Os dados exibidos abaixo já passaram pelas regras de autorização do Supabase e pelas policies de RLS.</p>
-        </article>
-
-        <article class="aen-card aen-gp-security-card">
-          <span class="aen-gp-eyebrow">Escopo atual</span>
-          <strong data-scope-summary>Carregando escopo...</strong>
-          <p class="aen-muted" data-record-summary>Separação por empresa, papel e status em andamento.</p>
-        </article>
-      </section>
-
-      <section class="aen-gp-kpis">
-        <article class="aen-card">
-          <span class="aen-gp-kpi-label">Total visível</span>
-          <strong class="aen-gp-kpi-value" data-kpi-visible>0</strong>
-          <span class="aen-muted">Registros após aplicar os filtros atuais.</span>
-        </article>
-        <article class="aen-card">
+      <div class="aen-gp-kpis">
+        <article class="aen-card aen-gp-kpi-card">
           <span class="aen-gp-kpi-label">Aprovar</span>
           <strong class="aen-gp-kpi-value" data-kpi-approve>0</strong>
-          <span class="aen-muted">Itens aguardando validação.</span>
         </article>
-        <article class="aen-card">
+        <article class="aen-card aen-gp-kpi-card">
           <span class="aen-gp-kpi-label">Iniciar</span>
           <strong class="aen-gp-kpi-value" data-kpi-start>0</strong>
-          <span class="aen-muted">Itens prontos para início.</span>
         </article>
-        <article class="aen-card">
+        <article class="aen-card aen-gp-kpi-card">
           <span class="aen-gp-kpi-label">Desenvolvimento</span>
           <strong class="aen-gp-kpi-value" data-kpi-progress>0</strong>
-          <span class="aen-muted">Itens em execução.</span>
         </article>
-      </section>
+        <article class="aen-card aen-gp-kpi-card">
+          <span class="aen-gp-kpi-label">Total visível</span>
+          <strong class="aen-gp-kpi-value" data-kpi-visible>0</strong>
+        </article>
+      </div>
 
       <section class="aen-card aen-gp-toolbar-card">
         <div class="aen-gp-toolbar">
@@ -268,7 +223,10 @@
         </div>
         <div class="aen-gp-toolbar-footer">
           <p class="aen-muted">Ordenação fixa por atualização mais recente. O filtro do front-end é apenas apoio visual: a segurança continua no banco.</p>
-          <strong data-visible-counter>0 registros visíveis</strong>
+          <div class="aen-gp-toolbar-counter">
+            <strong data-visible-counter>0 registros visíveis</strong>
+            <button class="aen-btn aen-gp-clear-btn" type="button" data-clear-filters hidden>Limpar filtros</button>
+          </div>
         </div>
       </section>
 
@@ -313,7 +271,7 @@
           </div>
           <div>
             <label for="gp-admin-manager">Gerente de Projetos</label>
-            <input id="gp-admin-manager" name="gerente_projetos" type="text" maxlength="140" placeholder="Nome do GP responsável">
+            <input id="gp-admin-manager" name="gerente_projetos" type="text" maxlength="140" placeholder="Nome da Gestora de Projeto responsável">
           </div>
           <div>
             <label for="gp-admin-consultant">Consultor</label>
@@ -393,7 +351,13 @@
 
       <div class="aen-gp-state" data-empty-state hidden>
         <strong>Nenhum registro encontrado.</strong>
-        <p class="aen-muted">Ajuste os filtros ou aguarde novas movimentações da sua empresa.</p>
+        <p class="aen-muted">Nenhuma demanda corresponde aos filtros ativos.</p>
+        <button class="aen-btn" type="button" data-clear-filters-empty>Limpar filtros</button>
+      </div>
+
+      <div class="aen-gp-state is-error" data-error-state hidden>
+        <strong>Não foi possível carregar as demandas.</strong>
+        <p class="aen-muted">Verifique a conexão e tente novamente. Se o problema persistir, contate o suporte AEN.</p>
         <button class="aen-btn" type="button" data-retry-button>Tentar novamente</button>
       </div>
 
@@ -402,7 +366,7 @@
           <thead>
             <tr>
               <th scope="col">Empresa</th>
-              <th scope="col">Gerente de Projetos</th>
+              <th scope="col">Gestora de Projeto</th>
               <th scope="col">Consultor</th>
               <th scope="col">Cliente</th>
               <th scope="col">Título</th>

@@ -42,6 +42,8 @@
   const SYNC_REASON = { restore: "restore", login: "login", mfa: "mfa", session: "session" };
   const AUTH_STEP_TIMEOUT_MS = 15000;
 
+  const SESSION_FILTER_KEY = "aensystems-gp-filters";
+
   const refs = {
     publicShell: document.querySelector("[data-gp-public-shell]"),
     boot: root.querySelector("[data-boot-state]"),
@@ -50,6 +52,7 @@
     loginOpenButton: root.querySelector("[data-login-open-button]"),
     loginCloseButton: root.querySelector("[data-login-close-button]"),
     mfa: root.querySelector("[data-mfa-view]"),
+    mfaBackButton: root.querySelector("[data-mfa-back-button]"),
     privateTemplate: root.querySelector("[data-private-template]"),
     private: root.querySelector("[data-private-view]"),
     configAlert: root.querySelector("[data-config-alert]"),
@@ -78,6 +81,7 @@
     refreshButton: null,
     logoutButton: null,
     retryButton: null,
+    clearFiltersEmpty: null,
     searchInput: null,
     statusFilter: null,
     priorityFilter: null,
@@ -86,6 +90,7 @@
     dashboardFeedback: null,
     loading: null,
     empty: null,
+    errorState: null,
     tableWrap: null,
     tableBody: null,
     mobileList: null,
@@ -101,7 +106,9 @@
     adminDeleteButton: null,
     adminFeedback: null,
     lrcFileCurrent: null,
-    adminActionsHead: null
+    adminActionsHead: null,
+    clearFilters: null,
+    togglePassword: null
   };
 
   const state = {
@@ -135,7 +142,7 @@
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
-  const roleLabel = (value) => ({ gp: "GP", consultor: "Consultor", admin: "Admin" }[value] || "Sem papel");
+  const roleLabel = (value) => ({ gp: "Gestora de Projeto", consultor: "Consultor", admin: "Admin", viewer: "Visualizador" }[value] || "Sem papel");
   const isMissingFunctionError = (error, fnName) => {
     const message = String((error && error.message) || "").toLowerCase();
     return message.indexOf(String(fnName || "").toLowerCase()) !== -1 && message.indexOf("function") !== -1;
@@ -214,6 +221,7 @@
     refs.refreshButton = root.querySelector("[data-refresh-button]");
     refs.logoutButton = root.querySelector("[data-logout-button]");
     refs.retryButton = root.querySelector("[data-retry-button]");
+    refs.clearFiltersEmpty = root.querySelector("[data-clear-filters-empty]");
     refs.searchInput = root.querySelector("[data-search-input]");
     refs.statusFilter = root.querySelector("[data-status-filter]");
     refs.priorityFilter = root.querySelector("[data-priority-filter]");
@@ -222,6 +230,7 @@
     refs.dashboardFeedback = root.querySelector("[data-dashboard-feedback]");
     refs.loading = root.querySelector("[data-loading-state]");
     refs.empty = root.querySelector("[data-empty-state]");
+    refs.errorState = root.querySelector("[data-error-state]");
     refs.tableWrap = root.querySelector("[data-table-wrap]");
     refs.tableBody = root.querySelector("[data-demandas-body]");
     refs.mobileList = root.querySelector("[data-mobile-list]");
@@ -238,6 +247,7 @@
     refs.adminFeedback = root.querySelector("[data-admin-feedback]");
     refs.lrcFileCurrent = root.querySelector("[data-lrc-file-current]");
     refs.adminActionsHead = root.querySelector("[data-admin-actions-head]");
+    refs.clearFilters = root.querySelector("[data-clear-filters]");
   }
 
   function clearPrivateView() {
@@ -255,6 +265,10 @@
     if (refs.logoutButton) refs.logoutButton.addEventListener("click", handleLogout);
     if (refs.refreshButton) refs.refreshButton.addEventListener("click", loadDashboard);
     if (refs.retryButton) refs.retryButton.addEventListener("click", loadDashboard);
+    if (refs.clearFiltersEmpty) refs.clearFiltersEmpty.addEventListener("click", function () {
+      resetFilters();
+      applyFilters();
+    });
     if (refs.searchInput) refs.searchInput.addEventListener("input", function (event) {
       state.filters.search = event.target.value || "";
       applyFilters();
@@ -269,6 +283,10 @@
     });
     if (refs.ownerFilter) refs.ownerFilter.addEventListener("change", function (event) {
       state.filters.owner = event.target.value || "Todos";
+      applyFilters();
+    });
+    if (refs.clearFilters) refs.clearFilters.addEventListener("click", function () {
+      resetFilters();
       applyFilters();
     });
     if (refs.adminForm) refs.adminForm.addEventListener("submit", saveAdminDemand);
@@ -347,6 +365,17 @@
     });
   }
 
+  function setBtnLoading(btn, loading, originalText) {
+    if (!btn) return;
+    btn.disabled = loading;
+    if (loading) {
+      if (!btn.dataset.origText) btn.dataset.origText = btn.textContent.trim();
+      btn.innerHTML = '<span class="aen-btn-spinner" aria-hidden="true"></span>' + (originalText || btn.dataset.origText || "");
+    } else {
+      btn.innerHTML = btn.dataset.origText || btn.textContent;
+    }
+  }
+
   function setBusy(yes) {
     state.authBusy = yes;
     [
@@ -363,6 +392,9 @@
     ].forEach(function (key) {
       if (refs[key]) refs[key].disabled = yes;
     });
+    setBtnLoading(refs.loginSubmit, yes, yes ? "Entrando..." : "Entrar");
+    setBtnLoading(refs.mfaEnrollSubmit, yes, yes ? "Verificando..." : "Ativar MFA");
+    setBtnLoading(refs.mfaChallengeSubmit, yes, yes ? "Verificando..." : "Validar código");
     hide(refs.loading, !yes || refs.private.hidden);
   }
 
@@ -391,12 +423,33 @@
     if (title) title.textContent = message || "Validando sessão e regras de acesso...";
   }
 
+  function saveFiltersToSession() {
+    try {
+      window.sessionStorage.setItem(SESSION_FILTER_KEY, JSON.stringify(state.filters));
+    } catch (_e) { /* sessão sem suporte a sessionStorage */ }
+  }
+
+  function loadFiltersFromSession() {
+    try {
+      const raw = window.sessionStorage.getItem(SESSION_FILTER_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (saved && typeof saved === "object") {
+        state.filters.search = String(saved.search || "");
+        state.filters.status = String(saved.status || "Todos");
+        state.filters.priority = String(saved.priority || "Todas");
+        state.filters.owner = String(saved.owner || "Todos");
+      }
+    } catch (_e) { /* ignora JSON inválido */ }
+  }
+
   function resetFilters() {
     state.filters = { search: "", status: "Todos", priority: "Todas", owner: "Todos" };
     if (refs.searchInput) refs.searchInput.value = "";
     if (refs.statusFilter) refs.statusFilter.value = "Todos";
     if (refs.priorityFilter) refs.priorityFilter.value = "Todas";
     if (refs.ownerFilter) refs.ownerFilter.value = "Todos";
+    try { window.sessionStorage.removeItem(SESSION_FILTER_KEY); } catch (_e) {}
   }
 
   function clearAdminForm(message, tone) {
@@ -494,6 +547,12 @@
     });
     if (refs.priorityFilter) refs.priorityFilter.innerHTML = optionList(priorities, "Todas", priorityLabel);
     if (refs.ownerFilter) refs.ownerFilter.innerHTML = optionList(owners, "Todos");
+
+    loadFiltersFromSession();
+    if (refs.searchInput) refs.searchInput.value = state.filters.search;
+    if (refs.statusFilter) refs.statusFilter.value = state.filters.status;
+    if (refs.priorityFilter) refs.priorityFilter.value = state.filters.priority;
+    if (refs.ownerFilter) refs.ownerFilter.value = state.filters.owner;
   }
 
   function renderKpis() {
@@ -582,7 +641,7 @@
         return (
           "<tr>"
           + '<td data-label="Empresa">' + esc(item.empresa || "-") + "</td>"
-          + '<td data-label="Gerente de Projetos">' + esc(item.gerente_projetos || "-") + "</td>"
+          + '<td data-label="Gestora de Projeto">' + esc(item.gerente_projetos || "-") + "</td>"
           + '<td data-label="Consultor">' + esc(item.consultor || "-") + "</td>"
           + '<td data-label="Cliente">' + esc(item.cliente || "-") + "</td>"
           + '<td data-label="Título"><div class="aen-gp-title-cell"><strong>' + esc(item.titulo || "Sem título") + "</strong></div></td>"
@@ -609,7 +668,7 @@
           + '<div class="aen-gp-mobile-card-head"><strong>' + esc(item.titulo || "Sem título") + '</strong><span class="aen-gp-chip">' + esc(item.empresa || "-") + "</span></div>"
           + '<p class="aen-muted">' + esc(shortText(item.descricao)) + "</p>"
           + '<div class="aen-gp-mobile-meta">'
-          + "<span><small>Gerente de Projetos</small>" + esc(item.gerente_projetos || "-") + "</span>"
+          + "<span><small>Gestora de Projeto</small>" + esc(item.gerente_projetos || "-") + "</span>"
           + "<span><small>Consultor</small>" + esc(item.consultor || "-") + "</span>"
           + "<span><small>Cliente</small>" + esc(item.cliente || "-") + "</span>"
           + "<span><small>Documento LRC/E-mail</small>" + documentDisplay(item) + "</span>"
@@ -629,6 +688,11 @@
     hide(refs.tableWrap, state.visible.length === 0);
     hide(refs.mobileList, state.visible.length === 0);
     hide(refs.empty, state.visible.length > 0);
+    hide(refs.errorState, true);
+    const hasActiveFilters = state.filters.search !== "" || state.filters.status !== "Todos" || state.filters.priority !== "Todas" || state.filters.owner !== "Todos";
+    if (refs.clearFilters) refs.clearFilters.hidden = !hasActiveFilters;
+    if (refs.clearFiltersEmpty) refs.clearFiltersEmpty.hidden = !hasActiveFilters;
+    saveFiltersToSession();
     renderKpis();
   }
 
@@ -761,7 +825,7 @@
 
     if (!state.profile && !fromExplicitLogin) {
       await logAudit("access_denied", "warning", { reason: "profile_missing", sync_reason: syncReason });
-      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das Gestoras de Projeto.", "info");
       return false;
     }
 
@@ -776,7 +840,7 @@
 
     if (!state.profile.ativo && !fromExplicitLogin) {
       await logAudit("access_denied", "warning", { reason: "inactive_profile", sync_reason: syncReason });
-      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das Gestoras de Projeto.", "info");
       return false;
     }
 
@@ -788,7 +852,7 @@
 
     if (!state.profile.empresa && !isAdmin() && !fromExplicitLogin) {
       await logAudit("access_denied", "warning", { reason: "company_missing", sync_reason: syncReason });
-      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das Gestoras de Projeto.", "info");
       return false;
     }
 
@@ -856,7 +920,7 @@
       renderProfile();
       closeLoginModal({ instant: true });
       if (!state.demandas.length) setDash("Nenhuma demanda ativa foi encontrada para o seu escopo atual.", "info");
-      await logAudit("dashboard_view", "success", {
+      await logAudit("visualizou_demandas", "success", {
         empresa: state.profile.empresa,
         role: state.profile.role,
         aal: state.aal.currentLevel
@@ -864,7 +928,8 @@
     } catch (error) {
       console.error(error);
       resetData();
-      hide(refs.empty, false);
+      hide(refs.errorState, false);
+      hide(refs.empty, true);
       setDash("Não foi possível carregar os dados autorizados. Revise o schema, as policies e a configuração do Supabase.", "error");
       await logAudit("access_denied", "error", { reason: "dashboard_load_failed" });
     } finally {
@@ -894,7 +959,7 @@
     }
     const user = await withTimeout(state.client.auth.getUser(), "Validação do usuário");
     if (user.error || !user.data || !user.data.user) {
-      await resetSessionAndShowGuest("Faça login para acessar a Área das GPs.", "info");
+      await resetSessionAndShowGuest("Faça login para acessar a Área das Gestoras de Projeto.", "info");
       return;
     }
     if (await enforceAccess(reason)) await withTimeout(loadDashboard(), "Carregamento do painel", 25000);
@@ -967,7 +1032,10 @@
         setInline(refs.loginFeedback, "Acesso liberado. Carregando painel...", "success");
         await withTimeout(loadDashboard(), "Carregamento do painel", 25000);
       }
-      await logAudit("login_success", "success", { aal: state.aal.currentLevel });
+      await logAudit("login_ok", "success", { aal: state.aal.currentLevel });
+      try {
+        await state.client.rpc("touch_ultimo_acesso");
+      } catch (_e) { /* não crítico */ }
     } catch (error) {
       console.error(error);
       const message = error && /demorou demais/i.test(String(error.message || ""))
@@ -998,11 +1066,12 @@
       if (verify.error) throw verify.error;
       refs.mfaEnrollForm.reset();
       await fetchAal();
-      await logAudit("mfa_enroll_completed", "success", { aal: state.aal.currentLevel });
+      await logAudit("mfa_ok", "success", { aal: state.aal.currentLevel, type: "enroll" });
       setInline(refs.mfaFeedback, "MFA ativado com sucesso. Liberando a área privada...", "success");
       await syncSession({ silent: true, reason: SYNC_REASON.mfa });
     } catch (error) {
       console.error(error);
+      await logAudit("mfa_fail", "error", { type: "enroll", message: String((error && error.message) || "") });
       setInline(refs.mfaFeedback, "Não foi possível validar o código informado.", "error");
     } finally {
       setBusy(false);
@@ -1025,12 +1094,13 @@
       if (verify.error) throw verify.error;
       refs.mfaChallengeForm.reset();
       await fetchAal();
-      await logAudit("mfa_challenge_completed", "success", { aal: state.aal.currentLevel });
+      await logAudit("mfa_ok", "success", { aal: state.aal.currentLevel, type: "challenge" });
       setInline(refs.mfaFeedback, "MFA validado. Carregando a área privada...", "success");
       await syncSession({ silent: true, reason: SYNC_REASON.mfa });
     } catch (error) {
       console.error(error);
-      setInline(refs.mfaFeedback, "Código MFA inválido ou expirado.", "error");
+      await logAudit("mfa_fail", "error", { type: "challenge", message: String((error && error.message) || "") });
+      setInline(refs.mfaFeedback, "Código MFA inválido ou expirado. Verifique o horário do dispositivo e tente novamente.", "error");
     } finally {
       setBusy(false);
     }
@@ -1286,6 +1356,20 @@
     root.querySelectorAll(".aen-gp-modal .aen-gp-lock").forEach(function (element) {
       element.remove();
     });
+    refs.togglePassword = root.querySelector("[data-toggle-password]");
+    if (refs.togglePassword) {
+      refs.togglePassword.addEventListener("click", function () {
+        const input = refs.loginForm && refs.loginForm.querySelector('input[name="password"]');
+        if (!input) return;
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        const icon = refs.togglePassword.querySelector("[data-eye-icon]");
+        if (icon) icon.textContent = isHidden ? "🙈" : "👁";
+      });
+    }
+    if (refs.mfaBackButton) refs.mfaBackButton.addEventListener("click", function () {
+      resetSessionAndShowGuest("Sessão cancelada. Faça login novamente se desejar acessar.", "info");
+    });
     if (refs.loginOpenButton) refs.loginOpenButton.addEventListener("click", openLoginModal);
     if (refs.loginCloseButton) {
       refs.loginCloseButton.addEventListener("click", function (event) {
@@ -1311,7 +1395,7 @@
       await syncSession({ silent: false, reason: SYNC_REASON.restore });
     } catch (error) {
       console.error(error);
-      showGuest("Não foi possível inicializar a Área das GPs. Revise a configuração do Supabase e tente novamente.", "error");
+      showGuest("Não foi possível inicializar a Área das Gestoras de Projeto. Revise a configuração do Supabase e tente novamente.", "error");
     }
   }
 
