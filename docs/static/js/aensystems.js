@@ -64,6 +64,15 @@
     });
   }
 
+  const header = document.querySelector('.aen-header');
+  if (header) {
+    const onScroll = () => {
+      header.classList.toggle('is-scrolled', window.scrollY > 8);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
   const clientLogos = document.querySelectorAll('.aen-client-card img');
   clientLogos.forEach((img) => {
     const card = img.closest('.aen-client-card');
